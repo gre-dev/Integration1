@@ -2,8 +2,8 @@
 class API {
 
     private $dbname = 'first';
-    private $db_user = 'root';
-    private $db_pass = 'password';
+    private $user = 'root';
+    private $pass = 'password';
     
     private $api_keys_table = 'api_keys';
     private $accounts_table = 'accounts';
@@ -11,12 +11,13 @@ class API {
 
     private function db_connect() {        
         try {
-            $this->db = new PDO("mysql:host=localhost;dbname={$this->dbname}", $this->db_user, $this->db_pass);
+            $this->db = new PDO("mysql:host=localhost;dbname={$this->dbname}", $this->user, $this->pass);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
         } catch (PDOException $e) {
-            die();
+       
+            throw new DBException("Error while connecting to db, please check if server login credentials is correct: Username {$this->user}, Password {$this->pass}",$e);
         }
         return $this->db;
     }
@@ -37,7 +38,7 @@ class API {
             
             if (!$result || $planStmt->fetchColumn() === 0)
             {
-                die();
+                throw new DBException("Error while ensuring plan $planid exists in db");
             }
             
             $accountStmt = $db->prepare("SELECT COUNT(id) from {$this->accounts_table} where id = ?");
@@ -45,7 +46,7 @@ class API {
             
             if (!$result || $accountStmt->fetchColumn() === 0)
             {
-                die();
+                throw new DBException("Error while ensuring account $accountid exists in db");
             }
           
             $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date) VALUES (:accountid, :apikey, :requests, :planid, :date)");
@@ -59,7 +60,7 @@ class API {
             ];
             $result = $stmt->execute($data);
 
-            if (!$result) { die(); }
+            if (!$result) { throw new DBException("Error while adding a new api key for account $accountid, plan $planid"); }
 
             $keyid = $db->lastInsertId();
             
@@ -68,7 +69,7 @@ class API {
             return $keyid;
         }
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while adding a new api key for account $accountid, plan $planid in db",$e);
         }
         
         $this->db_close_connection();        
@@ -79,7 +80,7 @@ class API {
     public function generate_apikey_string () {
         // until we change implementation, this is enough now
             
-        return uniqid(); 
+        return uniqid();
     }
         
     public function regenerate_key($keyid) { 
@@ -97,10 +98,10 @@ class API {
             
             $result = $stmt->execute($data);
             
-            if (!$result) { die() ; }
+            if (!$result) { throw new DBException("Error while updating key $keyid string") ; }
         }
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while updating api key $keyid string in db",$e);
         }
 
     } 
@@ -109,7 +110,7 @@ class API {
     {
         try {
             if (empty($keyid) || empty($targetplanid)) {
-                die();
+                throw new InvalidArgumentException("Some or all args are empty strings");
             }
             $db = $this->db_connect();
 
@@ -118,7 +119,7 @@ class API {
             
             if (!$result || $planStmt->fetchColumn() === 0)
             {
-                die();
+                throw new DBException("Error while ensuring plan $targetplanid is in db");
             }
             
             $stmt = $db->prepare("UPDATE {$this->api_keys_table} SET plan_id = :planid where id = :id");
@@ -132,13 +133,13 @@ class API {
             
             if (!$result)
             {
-                die();
+                throw new DBException("Error while updating plan $planid for key $keyid");
             }
     
         }
         catch (PDOException $e) {
-            die();
-        }
+            throw new DBException("Error while updating plan $planid for key $keyid in db",$e);
+       }
     }
               
     public function get_plan_name($keyid) {
@@ -150,14 +151,14 @@ class API {
             
             if (!$result || $keyStmt->fetchColumn() === 0)
             {
-                die();
+                throw new DBException("Error while getting key $keyid");
             }
             
             $cmpStmt = $db->prepare("SELECT {$this->plans_table}.name FROM {$this->api_keys_table}, {$this->plans_table} WHERE {$this->api_keys_table}.id = ? AND {$this->plans_table}.id = {$this->api_keys_table}.plan_id");
             
             $cmpStmt->execute(array($keyid));
 
-            if (!$result) die();
+            if (!$result) throw new DBException("Error while getting plan name for api $keyid");
         
             $name = $cmpStmt->fetchColumn();
 
@@ -165,8 +166,7 @@ class API {
             return $name;
         }
         catch (PDOException $e) {
-
-            die();
+            throw new DBException ("Error while getting plan name for api key $keyid in db",$e);
         }
         
         $this->db_close_connection();
@@ -184,8 +184,8 @@ class API {
 
             if (!$key)
             {
-                die();
-            }
+                throw new DBException("Error while get api key $keyid plan expirity");
+             }
 
             $startdate = $key->date;
             
@@ -193,9 +193,9 @@ class API {
             $planPeroidStmt->execute(array($key->plan_id));
             $planperiod = $planPeroidStmt->fetchColumn();
             
-            if (!$planperiod)
+            if ($planperiod === false)
             {
-                die();
+                throw new DBException("Error while get plan period {$key->plan_id} expirty value");    
             }
             
             $this->db_close_connection();
@@ -203,7 +203,7 @@ class API {
 
         }
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while get api key $keyid expirty values in db",$e);    
         }
 
         $this->db_close_connection();
@@ -226,7 +226,7 @@ class API {
         }
 
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while getting referrer for key $keyid from db",$e);
         }
         
         $this->db_close_connection();
@@ -245,12 +245,18 @@ class API {
 
             if (!$key)
             {
-                die();
-            }
+                throw new DBException("Error while getting requests number for key $keyid");
+            }           
+        }
+        
+        catch (PDOException $e) {
+            throw new DBException("Error while getting remaining requests (quotas) for key $keyid in db",$e);
+        }
+        
+        $requests = $key->requests;
+        $planid = $key->plan_id;
 
-            $requests = $key->requests;
-            $planid = $key->plan_id;
-
+        try {
             $planStmt = $db->prepare("SELECT max_requests FROM {$this->plans_table} WHERE id = ?");
             $planStmt->execute(array($planid));
             $planrequests = $planStmt->fetchColumn();
@@ -258,16 +264,16 @@ class API {
             
             if ($planrequests === false)
             {
-                die();
+                throw new DBException("Error while getting plan $planid requests");
             }
 
             $this->db_close_connection();
             return $planrequests - $requests < 0 ? 0 : $planrequests - $requests ;
         }
-        
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while getting remaining requests (quotas) for key $keyid, plan $planid in db",$e);
         }
+
         $this->db_close_connection();
         return null;
     }

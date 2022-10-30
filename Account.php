@@ -1,6 +1,8 @@
 <?php
 
 require_once 'API.php';
+require_once './Exceptions/DBException.php';
+require_once './Exceptions/SessionException.php';
     
 class Account {
 
@@ -15,16 +17,16 @@ class Account {
     
     private $db;
 
-    private function db_connect() {        
-        try {
-            $this->db = new PDO("mysql:host=localhost;dbname={$this->dbname}", $this->user, $this->pass);
+    private function db_connect() {
+        try {            
+            $this->db = new PDO("mysql:host=localhost;dbname=$this->dbname", $this->user, $this->pass);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $this->db;
 
         } catch (PDOException $e) {
-            die();
+            throw new DBException("Error while connecting to db, please check if server login credentials is correct: Username {$this->user}, Password {$this->pass}",$e);
         }
     }
 
@@ -40,7 +42,7 @@ class Account {
             $password = $_SESSION['login_password'];
             
             if (empty($email) || empty($password)) {
-                return false;
+                throw new SessionException("login data (password or email) does't exist in current session");
             }
             
             try {
@@ -61,7 +63,7 @@ class Account {
                 }
             }
             catch (PDOException $e) {
-                die();
+                throw new DBException("Error while checking user session data in db",$e);
             }
         }
         $this->db_close_connection();
@@ -75,7 +77,7 @@ class Account {
         
         // maybe checking account password is strong, notice
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            die();
+            throw new InvalidArgumentException("Email passed doesn't look like an email string");
         }
 
         session_start();
@@ -87,10 +89,12 @@ class Account {
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
+                        throw new InvalidArgumentException("Email passed doesn't look like an email string");
         }
         
-        if (empty($email) || empty($pass)) { return false; }
+        if (empty($email) || empty($pass)) {
+            throw new InvalidArgumentException("Some or all args are empty strings");
+        }
 
         try {
   
@@ -104,7 +108,7 @@ class Account {
             $success = $stmt->execute();
 
             if (!$success) {
-                die();
+                throw new DBException("Error while performing login credentials checking queries: Email $email, Password $pass");
             }
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -116,7 +120,7 @@ class Account {
             
         }
         catch (PDOException $e) {
-            die();
+            throw new DBException("while performing login credentials checking queries: Email $email, Password $pass",$e);
         }
 
         // for properly close if anything behave unexpectably
@@ -128,10 +132,13 @@ class Account {
     public function create_new_account($email,$password,$username) { // check if them are required to function or just username
         
         try {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || empty($password) || empty($username)) {
-                die();
+            if (empty($password) || empty($username)) {
+                throw new InvalidArgumentException("Some args are empty strings");
             }
-            
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new InvalidArgumentException("Email arg doesn't look like an email string");
+            }
             
             $db = $this->db_connect();
 
@@ -150,7 +157,7 @@ class Account {
             $result = $stmt->execute($data);
         
             if ($result === false || $stmt->rowCount() !== 1) {
-                die();
+                throw new DBException("Error while adding a new account");
             }
                 
             $accountId = $db->lastInsertId();
@@ -162,7 +169,7 @@ class Account {
             return $accountId;
         }
         catch (PDOException $e) {           
-            die();
+            throw new DBException("Error while adding a new account to db");
         }
         $this->db_close_connection();
         $this->update_session_data($email, $pass); 
@@ -171,7 +178,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            die();
+            throw new DBException("Email passed $email doesn't looks like sanitized email");
         }
         
         try {
@@ -182,7 +189,7 @@ class Account {
             
             if (!$result)
             {
-                die();
+               throw new DBException("Error while checking if email already exists");                         
             }
 
             $rows = $stmt->fetchColumn();
@@ -190,7 +197,7 @@ class Account {
             return ($rows === 0);
         }
         catch (PDOException $e) {
-            die();
+            throw new DBException("Error while checking if email already exists in db",$e);
         }
         
         $this->db_close_connection();
@@ -228,7 +235,7 @@ class Account {
         $encoded_token = $this->base62_encode($random);
         
         $encoded_token = strtolower($encoded_token); // beutify only
-                
+
         try {
             
             $db = $this->db_connect();
@@ -244,11 +251,11 @@ class Account {
     
             if (!$result || $stmt->rowCount() !== 1) // affected rows
             {
-                die();
+                throw new DBException ("Error while storing password token for account $id");
             }
         }
-        catch (PDOException $e) {
-            die();
+        catch (PDOException $e) {   
+            throw new DBException ("Error while storing password token for account $id in db",$e);
         }
         
         $this->db_close_connection();
@@ -260,7 +267,7 @@ class Account {
         // note that you have to pass password as normal string not as hash
         
         if (empty($password) || empty($email)) {
-            die();
+            throw new InvalidArgumentException ('Either email or password args passed is empty');
         }
         
         try {
@@ -268,15 +275,25 @@ class Account {
             $db = $this->db_connect();
     
             $stmt = $db->prepare("SELECT id FROM {$this->accounts_table} WHERE email = ?");
-
             $stmt->execute(array($email));
 
             $accountId = $stmt->fetchColumn();
+        
+            if (!$accountId)
+            {
+                throw new DBException("Error while updating password for an account");
+            }
+
+        }
+        catch (PDOException $e) {
+            throw new DBException("Error while updating password for an account in db",$e);
+        }
 
             $hashoptions = [
                 'cost' => 12,
             ];
             $passhash =  password_hash($password, PASSWORD_BCRYPT, $hashoptions);
+            try {
             
             $passStmt = $db->prepare("UPDATE {$this->accounts_table} SET password = :pass where id = :accountid");
 
@@ -289,15 +306,14 @@ class Account {
     
             if (!$result || $passStmt->rowCount() !== 1)
             {
-                die();
+                throw new DBException("Error while updating password for account $accountId");
             }
-
             $this->update_session_data($email, $passhash);
+
+    }        catch (PDOException $e) {
+                throw new DBException("Error while updating password for account $accountId in db",$e);
         }
-        catch (PDOException $e) {
-            die();
-        }
-        
+            
         $this->db_close_connection();
     }
 
