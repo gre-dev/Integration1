@@ -3,9 +3,13 @@
 require_once 'API.php';
 require_once './Exceptions/DBException.php';
 require_once './Exceptions/SessionException.php';
+
+require_once './Traits/InputHandleTrait.php';
     
 class Account {
 
+    use InputHandleTrait;
+    
     private $dbname='first';
     private $user='root';
     private $pass='password';
@@ -40,7 +44,10 @@ class Account {
             
             $email = $_SESSION['login_email'];
             $password = $_SESSION['login_password'];
-            
+
+            $email = $this->revert_html_filter($email);
+            $password = $this->revert_html_filter($password);
+
             if (empty($email) || empty($password)) {
                 throw new SessionException("login data (password or email) does't exist in current session");
             }
@@ -81,8 +88,8 @@ class Account {
         }
 
         session_start();
-        $_SESSION['login_email'] = $email;
-        $_SESSION['login_password'] = $pass;
+        $_SESSION['login_email'] = $this->filter_html_input($email);
+        $_SESSION['login_password'] = $this->filter_html_input($pass);
     }
 
     public function validate_login_credentials($email,$pass)
