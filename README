@@ -7,7 +7,7 @@ Exceptions:
 
 you should pass error number to `SessionException` once you throw it, don't pass a string message to `SessionException` as it will not worked and will not constructing the exception.
 
-passing number other than the listed will make exception return string with explainations, avoid it please and implement your exception class inherited from `SessionException` instead ;
+passing number other than the listed will make exception return string with explainations, avoid it please and implement your exception class inherited from `SessionException` instead.
 
 you have the following error code options:
 
