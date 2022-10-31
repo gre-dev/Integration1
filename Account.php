@@ -79,8 +79,9 @@ class Account {
     } 
             
 
-    public function update_session_data($email, $pass) //use session_start() outside this function
+    public function update_session_data($email, $pass, $is_hashed = false) //use session_start() outside this function
     {
+
         
         // maybe checking account password is strong, notice
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -91,7 +92,7 @@ class Account {
         $_SESSION['login_email'] = $this->filter_html_input($email);
         $_SESSION['login_password'] = $this->filter_html_input($pass);
     }
-
+    
     public function validate_login_credentials($email,$pass)
     {
         
@@ -151,14 +152,18 @@ class Account {
 
             $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time) VALUES (:username, :email, :pass, :time)");
 
-            $hashoptions = [
-                'cost' => 12,
-            ];
+            if ($is_hashed === false) {
+                $hashoptions = [
+                    'cost' => 12,
+                ];
+                
+                $password =    password_hash($password, PASSWORD_BCRYPT, $hashoptions);
+            }
             
             $data = [
                 'username' => $username,
                 'email'    => $email,
-                'pass'     =>  password_hash($password, PASSWORD_BCRYPT, $hashoptions),
+                'pass'     => $password,
                 'time'    => time()
                 
             ];
@@ -196,7 +201,7 @@ class Account {
             $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE email = :email");
             $result = $stmt->execute(array($email));
             
-            if (!$result)
+            if (!$result || $passStmt->rowCount() !== 1)
             {
                throw new DBException("Error while checking if email already exists");                         
             }
@@ -271,10 +276,8 @@ class Account {
         return $encoded_token;
     }
 
-    public function update_password($email,$password) {
+    public function update_password($email,$password, $is_hashed = false) {
 
-        // note that you have to pass password as normal string not as hash
-        
         if (empty($password) || empty($email)) {
             throw new InvalidArgumentException ('Either email or password args passed is empty');
         }
@@ -298,13 +301,20 @@ class Account {
             throw new DBException("Error while updating password for an account in db",$e);
         }
 
+        if ($is_hashed === false) {
             $hashoptions = [
                 'cost' => 12,
             ];
-            $passhash =  password_hash($password, PASSWORD_BCRYPT, $hashoptions);
-            try {
-            
+            $passhash =   password_hash($password, PASSWORD_BCRYPT, $hashoptions);
+        }
+        else {
+            $passhash = $password;
+        }
+        
+        try {
+
             $passStmt = $db->prepare("UPDATE {$this->accounts_table} SET password = :pass where id = :accountid");
+
 
             $data = array(
                 'pass' => $passhash,
@@ -312,7 +322,7 @@ class Account {
             );
                   
             $result = $passStmt->execute($data);
-    
+
             if (!$result || $passStmt->rowCount() !== 1)
             {
                 throw new DBException("Error while updating password for account $accountId");
