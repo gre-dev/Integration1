@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 30, 2022 at 01:19 AM
+-- Generation Time: Oct 31, 2022 at 03:51 PM
 -- Server version: 8.0.23-3+b1
 -- PHP Version: 8.1.3
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `accounts` (
   `id` int NOT NULL,
   `username` text NOT NULL,
-  `email` text NOT NULL,
+  `email` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` text NOT NULL,
   `reset_pass_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -45,7 +45,7 @@ CREATE TABLE `api_keys` (
   `id` int NOT NULL,
   `account_id` int NOT NULL,
   `plan_id` int NOT NULL,
-  `api_key` text NOT NULL,
+  `api_key` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `requests` int NOT NULL,
   `referrer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `date` int NOT NULL
@@ -72,7 +72,8 @@ CREATE TABLE `api_keys_plans` (
 -- Indexes for table `accounts`
 --
 ALTER TABLE `accounts`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `api_keys`
@@ -94,19 +95,19 @@ ALTER TABLE `api_keys_plans`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `api_keys`
 --
 ALTER TABLE `api_keys`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `api_keys_plans`
 --
 ALTER TABLE `api_keys_plans`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
