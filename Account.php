@@ -149,7 +149,7 @@ class Account {
             
             $db = $this->db_connect();
 
-            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password) VALUES (:username, :email, :pass)");
+            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time) VALUES (:username, :email, :pass, :time)");
 
             $hashoptions = [
                 'cost' => 12,
@@ -158,11 +158,13 @@ class Account {
             $data = [
                 'username' => $username,
                 'email'    => $email,
-                'pass'     =>  password_hash($password, PASSWORD_BCRYPT, $hashoptions)
+                'pass'     =>  password_hash($password, PASSWORD_BCRYPT, $hashoptions),
+                'time'    => time()
+                
             ];
             
             $result = $stmt->execute($data);
-        
+
             if ($result === false || $stmt->rowCount() !== 1) {
                 throw new DBException("Error while adding a new account");
             }
@@ -175,7 +177,7 @@ class Account {
             $this->db_close_connection();
             return $accountId;
         }
-        catch (PDOException $e) {           
+        catch (PDOException $e) {
             throw new DBException("Error while adding a new account to db");
         }
         $this->db_close_connection();
