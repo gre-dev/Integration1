@@ -49,7 +49,7 @@ class Account {
             $password = $this->revert_html_filter($password);
 
             if (empty($email) || empty($password)) {
-                throw new SessionException("login data (password or email) does't exist in current session");
+                throw new SessionException(SessionException::ERR_DATA_NOT_FOUND);
             }
             
             try {
