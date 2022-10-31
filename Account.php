@@ -79,7 +79,7 @@ class Account {
     } 
             
 
-    public function update_session_data($email, $pass, $is_hashed = false) //use session_start() outside this function
+    public function update_session_data($email, $pass, $is_hashed = true) //use session_start() outside this function
     {
 
         
@@ -276,7 +276,7 @@ class Account {
         return $encoded_token;
     }
 
-    public function update_password($email,$password, $is_hashed = false) {
+    public function update_password($email,$password, $is_hashed = true) {
 
         if (empty($password) || empty($email)) {
             throw new InvalidArgumentException ('Either email or password args passed is empty');
