@@ -323,7 +323,7 @@ class Account {
                   
             $result = $passStmt->execute($data);
 
-            if (!$result || $passStmt->rowCount() !== 1)
+            if (!$result)
             {
                 throw new DBException("Error while updating password for account $accountId");
             }
