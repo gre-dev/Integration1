@@ -56,7 +56,7 @@ class Account {
                 $db = $this->db_connect();
 
                 // note that login_password in session is a hash , notice
-                $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE email = :email AND password = :pass");
+                $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE email = :email AND password = :pass LIMIT 1");
 
                 $stmt->bindValue(':email',$email);
                 $stmt->bindValue(':pass',$password);
@@ -107,7 +107,7 @@ class Account {
   
             $db = $this->db_connect();
 
-            $stmt = $db->prepare("SELECT * FROM {$this->accounts_table} WHERE email = :email AND password = :pass");
+            $stmt = $db->prepare("SELECT * FROM {$this->accounts_table} WHERE email = :email AND password = :pass LIMIT 1");
                 
             $stmt->bindValue(':email', $email);
             $stmt->bindValue(':pass' , $pass);
@@ -281,7 +281,7 @@ class Account {
             
             $db = $this->db_connect();
     
-            $stmt = $db->prepare("SELECT id FROM {$this->accounts_table} WHERE email = ?");
+            $stmt = $db->prepare("SELECT id FROM {$this->accounts_table} WHERE email = ? LIMIT 1");
             $stmt->execute(array($email));
 
             $accountId = $stmt->fetchColumn();
