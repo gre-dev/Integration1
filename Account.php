@@ -39,8 +39,8 @@ class Account {
 
         $dotenv->ifPresent('PLAN_FREE_ID')->isInteger();
         $this->PLAN_FREE_ID = $_ENV['PLAN_FREE_ID'] ?? 1;
-    
-}
+
+    }
         
     private function db_connect() {
         try {            
@@ -51,7 +51,10 @@ class Account {
             return $this->db;
 
         } catch (PDOException $e) {
-            throw new DBException("Error while connecting to db, please check if server login credentials is correct: Username {$this->dbuser}, Password {$this->dbpass}",$e);
+            
+            $exception = new DBException(DBException::DB_ERR_CONN_WRONG_DATA,$e);
+            $exception->set_connection_wrong_data("Error while connecting to db, please check if server login credentials is correct: Username {$this->dbuser}, Password {$this->dbpass}");
+            throw $exception;
         }
     }
 
@@ -91,7 +94,9 @@ class Account {
                 }
             }
             catch (PDOException $e) {
-                throw new DBException("Error while checking user session data in db",$e);
+                $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+                $exception->set_select_data( "Error while checking user session data in db");
+                throw  $exception;
             }
         }
         $this->db_close_connection();
@@ -118,7 +123,7 @@ class Account {
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        throw new InvalidArgumentException("Email passed doesn't look like an email string");
+            throw new InvalidArgumentException("Email passed doesn't look like an email string");
         }
         
         if (empty($email) || empty($pass)) {
@@ -137,7 +142,9 @@ class Account {
             $success = $stmt->execute();
 
             if (!$success) {
-                throw new DBException("Error while performing login credentials checking queries: Email $email, Password $pass");
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                $exception->set_select_data("Error while performing login credentials checking queries: Email $email, Password $pass");
+                throw $exception;
             }
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -149,7 +156,9 @@ class Account {
             
         }
         catch (PDOException $e) {
-            throw new DBException("while performing login credentials checking queries: Email $email, Password $pass",$e);
+            $exception = new DBException(DBException::DB_ERR_SELECT);
+            $exception->set_select_data("while performing login credentials checking queries: Email $email, Password $pass");
+            throw $exception;
         }
 
         // for properly close if anything behave unexpectably
@@ -192,7 +201,9 @@ class Account {
             $result = $stmt->execute($data);
 
             if ($result === false || $stmt->rowCount() !== 1) {
-                throw new DBException("Error while adding a new account");
+                $exception = new DBException(DBException::DB_ERR_INSERT);
+                $exception->set_insert_data("Error while adding a new account");
+                throw $exception;
             }
                 
             $accountId = $db->lastInsertId();
@@ -204,7 +215,9 @@ class Account {
             return $accountId;
         }
         catch (PDOException $e) {
-            throw new DBException("Error while adding a new account to db");
+            $exception = new DBException(DBException::DB_ERR_INSERT);
+            $exception->set_insert_data("Error while adding a new account to db");
+            throw $exception;
         }
         $this->db_close_connection();
         $this->update_session_data($email, $pass); 
@@ -213,7 +226,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new DBException("Email passed $email doesn't looks like sanitized email");
+            throw new InvalidArgumentException("Email passed $email doesn't looks like sanitized email");
         }
         
         try {
@@ -224,7 +237,9 @@ class Account {
             
             if (!$result || $passStmt->rowCount() !== 1)
             {
-               throw new DBException("Error while checking if email already exists");                         
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                $exception->set_select_data("Error while checking if email already exists");
+                throw $exception;
             }
 
             $rows = $stmt->fetchColumn();
@@ -232,7 +247,9 @@ class Account {
             return ($rows === 0);
         }
         catch (PDOException $e) {
-            throw new DBException("Error while checking if email already exists in db",$e);
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data("Error while checking if email already exists in db");
+            throw $exception;
         }
         
         $this->db_close_connection();
@@ -286,11 +303,15 @@ class Account {
     
             if (!$result || $stmt->rowCount() !== 1) // affected rows
             {
-                throw new DBException ("Error while storing password token for account $id");
+                $exception = new DBException (DBException::DB_ERR_INSERT);
+                $exception->set_insert_data("Error while storing password token for account $id");
+                throw $exception;
             }
         }
         catch (PDOException $e) {   
-            throw new DBException ("Error while storing password token for account $id in db",$e);
+            $exception = new DBException (DBException::DB_ERR_INSERT,$e);
+            $exception->set_insert_data("Error while storing password token for account $id in db");
+            throw $exception;
         }
         
         $this->db_close_connection();
@@ -314,12 +335,16 @@ class Account {
         
             if (!$accountId)
             {
-                throw new DBException("Error while updating password for an account");
+                $exception = new DBException(DBException::DB_ERR_UPDATE);
+                $exception->set_update_data("Error while updating password for an account");
+                throw $exception;
             }
 
         }
         catch (PDOException $e) {
-            throw new DBException("Error while updating password for an account in db",$e);
+            $exception = new DBException(DBException::DB_ERR_UPDATE,$e);
+            $exception->set_update_data("Error while updating password for an account");
+            throw $exception;
         }
 
         if ($is_hashed === false) {
@@ -346,12 +371,16 @@ class Account {
 
             if (!$result)
             {
-                throw new DBException("Error while updating password for account $accountId");
+                $exception = new DBException(DBException::DB_ERR_UPDATE);
+                $exception->set_update_data("password for account $accountId");
+                throw $exception;
             }
             $this->update_session_data($email, $passhash);
 
-    }        catch (PDOException $e) {
-                throw new DBException("Error while updating password for account $accountId in db",$e);
+        }        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_UPDATE, $e);
+            $exception->set_update_data("Error while updating password for account $accountId in db");
+            throw $exception;
         }
             
         $this->db_close_connection();
