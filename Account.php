@@ -69,8 +69,8 @@ class Account {
             $email = $_SESSION['login_email'];
             $password = $_SESSION['login_password'];
 
-            $email = $this->revert_html_filter($email);
-            $password = $this->revert_html_filter($password);
+            $email = $this->revert_filtered($email);
+            $password = $this->revert_filtered($password);
 
             if (empty($email) || empty($password)) {
                 throw new SessionException(SessionException::ERR_DATA_NOT_FOUND);
@@ -115,8 +115,8 @@ class Account {
         }
 
         session_start();
-        $_SESSION['login_email'] = $this->filter_html_input($email);
-        $_SESSION['login_password'] = $this->filter_html_input($pass);
+        $_SESSION['login_email'] = $this->filter_input($email);
+        $_SESSION['login_password'] = $this->filter_input($pass);
     }
     
     public function validate_login_credentials($email,$pass)
