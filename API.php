@@ -1,23 +1,44 @@
 <?php
+require_once 'vendor/autoload.php';
+
 class API {
 
-    private $dbname = 'first';
-    private $user = 'root';
-    private $pass = 'password';
+    private $dbhost;
+    private $dbname;
+    private $dbuser;
+    private $dbpass;
     
-    private $api_keys_table = 'api_keys';
-    private $accounts_table = 'accounts';
-    private $plans_table = 'api_keys_plans';
+    private $api_keys_table;
+    private $accounts_table;
+    private $plans_table;
+    
+    public function __construct() {
+
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+        $dotenv->load();
+        $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
+        $dotenv->required(['DB_API_KEYS_TABLE', 'DB_ACCOUNTS_TABLE','DB_PLANS_TABLE']);
+
+        $this->dbhost = $_ENV['DB_HOST'];
+        $this->dbname = $_ENV['DB_NAME'];
+        $this->dbuser = $_ENV['DB_USER'];
+        $this->dbpass = $_ENV['DB_PASSWORD'];
+        
+        $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
+        $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
+        $this->accounts_table = $_ENV['DB_PLANS_TABLE'];
+
+}
 
     private function db_connect() {        
         try {
-            $this->db = new PDO("mysql:host=localhost;dbname={$this->dbname}", $this->user, $this->pass);
+            $this->db = new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}", $this->dbuser, $this->dbpass);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
         } catch (PDOException $e) {
        
-            throw new DBException("Error while connecting to db, please check if server login credentials is correct: Username {$this->user}, Password {$this->pass}",$e);
+            throw new DBException("Error while connecting to db, please check if server login credentials is correct: Username {$this->dbuser}, Password {$this->dbpass}",$e);
         }
         return $this->db;
     }
