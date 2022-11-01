@@ -207,7 +207,7 @@ class API {
                 
             }
             
-            $cmpStmt = $db->prepare("SELECT {$this->plans_table}.name FROM {$this->api_keys_table}, {$this->plans_table} WHERE {$this->api_keys_table}.id = ? AND {$this->plans_table}.id = {$this->api_keys_table}.plan_id");
+            $cmpStmt = $db->prepare("SELECT {$this->plans_table}.name FROM {$this->api_keys_table}, {$this->plans_table} WHERE {$this->api_keys_table}.id = ? AND {$this->plans_table}.id = {$this->api_keys_table}.plan_id LIMIT 1");
             
             $cmpStmt->execute(array($keyid));
 
@@ -238,7 +238,7 @@ class API {
         try {
             $db = $this->db_connect();
             
-            $keyStmt = $db->prepare("SELECT date,plan_id FROM {$this->api_keys_table} WHERE id = ?");
+            $keyStmt = $db->prepare("SELECT date,plan_id FROM {$this->api_keys_table} WHERE id = ? LIMIT 1");
             $keyStmt->execute(array($keyid));
             $key = $keyStmt->fetch(PDO::FETCH_OBJ);
 
@@ -253,7 +253,7 @@ class API {
 
             $startdate = $key->date;
             
-            $planPeroidStmt = $db->prepare("SELECT period FROM {$this->plans_table} WHERE id = ?");
+            $planPeroidStmt = $db->prepare("SELECT period FROM {$this->plans_table} WHERE id = ? LIMIT 1");
             $planPeroidStmt->execute(array($key->plan_id));
             $planperiod = $planPeroidStmt->fetchColumn();
             
@@ -285,7 +285,7 @@ class API {
 
             $db = $this->db_connect();
             
-            $stmt = $db->prepare("SELECT referrer FROM {$this->api_keys_table} WHERE id = :id");
+            $stmt = $db->prepare("SELECT referrer FROM {$this->api_keys_table} WHERE id = :id LIMIT 1");
 
             if ($stmt->execute(array($keyid))) {
                 $referrer = $stmt->fetchColumn();
@@ -312,7 +312,7 @@ class API {
         try {
             $db = $this->db_connect();
             
-            $keyStmt = $db->prepare("SELECT requests,plan_id FROM {$this->api_keys_table} WHERE id = ?"); 
+            $keyStmt = $db->prepare("SELECT requests,plan_id FROM {$this->api_keys_table} WHERE id = ? LIMIT 1"); 
             $keyStmt->execute(array($keyid));
             $key = $keyStmt->fetch(PDO::FETCH_OBJ);
 
