@@ -27,7 +27,7 @@ class API {
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->accounts_table = $_ENV['DB_PLANS_TABLE'];
-
+        
     }
     
     private function db_connect() {        
@@ -55,8 +55,8 @@ class API {
         try {
             
             $db = $this->db_connect();
-
             $planStmt = $db->prepare("SELECT COUNT(id) from {$this->plans_table} where id = ?");
+
             $result = $planStmt->execute(array($planid));
             
             if (!$result || $planStmt->fetchColumn() === 0)

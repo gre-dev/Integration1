@@ -35,7 +35,7 @@ class Account {
         $this->dbuser = $_ENV['DB_USER'];
         $this->dbpass = $_ENV['DB_PASSWORD'];
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
-        $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
+        $this->plans_table = $_ENV['DB_ACCOUNTS_TABLE'];
 
         $dotenv->ifPresent('PLAN_FREE_ID')->isInteger();
         $this->PLAN_FREE_ID = $_ENV['PLAN_FREE_ID'] ?? 1;
@@ -113,13 +113,19 @@ class Account {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException("Email passed doesn't look like an email string");
         }
-
+        if ($is_hashed === false) {
+            $hashoptions = [
+                'cost' => 12,
+            ];
+            $pass = password_hash($pass, PASSWORD_BCRYPT, $hashoptions);
+        }
+        
         session_start();
         $_SESSION['login_email'] = $this->filter_input($email);
         $_SESSION['login_password'] = $this->filter_input($pass);
     }
     
-    public function validate_login_credentials($email,$pass)
+    public function validate_login_credentials($email,$pass,$is_hashed = true)
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -128,6 +134,13 @@ class Account {
         
         if (empty($email) || empty($pass)) {
             throw new InvalidArgumentException("Some or all args are empty strings");
+        }
+
+        if ($is_hashed === false) {
+            $hashoptions = [
+                'cost' => 12,
+            ];
+            $pass = password_hash($pass, PASSWORD_BCRYPT, $hashoptions);
         }
 
         try {
@@ -167,7 +180,7 @@ class Account {
     }
 
 
-    public function create_new_account($email,$password,$username) { // check if them are required to function or just username
+    public function create_new_account($email,$password,$username, $is_hashed = true) { // check if them are required to function or just username
         
         try {
             if (empty($password) || empty($username)) {
@@ -187,7 +200,7 @@ class Account {
                     'cost' => 12,
                 ];
                 
-                $password =    password_hash($password, PASSWORD_BCRYPT, $hashoptions);
+                $password = password_hash($password, PASSWORD_BCRYPT, $hashoptions);
             }
             
             $data = [
@@ -215,6 +228,7 @@ class Account {
             return $accountId;
         }
         catch (PDOException $e) {
+
             $exception = new DBException(DBException::DB_ERR_INSERT);
             $exception->set_insert_data("Error while adding a new account to db");
             throw $exception;
