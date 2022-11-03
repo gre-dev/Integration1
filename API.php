@@ -48,7 +48,7 @@ class API {
         
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
-        $this->accounts_table = $_ENV['DB_PLANS_TABLE'];
+        $this->plans_table = $_ENV['DB_PLANS_TABLE'];
         
     }
     /**
