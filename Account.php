@@ -67,6 +67,7 @@ class Account {
         $this->dbuser = $_ENV['DB_USER'];
         $this->dbpass = $_ENV['DB_PASSWORD'];
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
+        $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->plans_table = $_ENV['DB_ACCOUNTS_TABLE'];
 
         $dotenv->ifPresent('PLAN_FREE_ID')->isInteger();
@@ -75,7 +76,7 @@ class Account {
     }
 
     /**
-     * established db connection.
+     * established db connection. ///
      *
      * @return PDO represents the db connection object
      *
@@ -360,7 +361,7 @@ class Account {
             $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE email = :email");
             $result = $stmt->execute(array($email));
             
-            if (!$result || $passStmt->rowCount() !== 1)
+            if (!$result || $stmt->rowCount() !== 1)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 $exception->set_select_data("Error while checking if email already exists");
@@ -444,7 +445,7 @@ class Account {
             
             $result = $stmt->execute($data);
     
-            if (!$result || $stmt->rowCount() !== 1) // affected rows
+            if (!$result || $stmt->rowCount() !== 1) // affected rows ///
             {
                 $exception = new DBException (DBException::DB_ERR_INSERT);
                 $exception->set_insert_data("Error while storing password token for account $id");

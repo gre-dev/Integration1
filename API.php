@@ -29,7 +29,16 @@ class API {
     private $api_keys_table;
     private $accounts_table;
     private $plans_table;
+    
+    /**
+     * @var PDO $db PDO database object, don't use it directly inside
+     * class method (instead use db_connect and db_close_connection),
+     * exists for saving its reference only out after a function ends
+     * executions.      
+     **/
 
+    private $db;
+    
     /**
      * @todo add phpdotenv exception documentation.
      **/
