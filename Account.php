@@ -11,20 +11,52 @@ class Account {
 
     use InputHandleTrait;
 
+    /**
+     * @var string $dbhost mysql db host name or ip to use when quering data.
+     *
+     * @var string $dbname mysql db name to get data from.
+     *
+     * @var string $dbuser mysql db user to use.
+     *
+     * @var string $dbpass mysql db password to use
+     *
+     **/
+
     private $dbhost;
     private $dbname;
     private $dbuser;
-    private $dbpass='password';
+    private $dbpass;
+    
+    /**
+     * @var string $api_keys_table the api keys table name.
+     *
+     * @var string $api_keys_table the accounts table name.
+     **/
 
     private $api_keys_table;
     private $accounts_table;
 
+    
+    /**
+     * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
+     **/
     private $PLAN_FREE_ID;
+
+    
+    /**
+     * @var PDO $db PDO database object, don't use it directly inside
+     * class method (instead use db_connect and db_close_connection),
+     * exists for saving its reference only out after a function ends
+     * executions.      
+     **/
     
     private $db;
+    /**
+     * @todo add phpdotenv exception documentation.
+     **/
 
     public function __construct() {
-
+        
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
@@ -41,7 +73,15 @@ class Account {
         $this->PLAN_FREE_ID = $_ENV['PLAN_FREE_ID'] ?? 1;
 
     }
-        
+
+    /**
+     * established db connection.
+     *
+     * @return PDO represents the db connection object
+     *
+     * @throws DBException if an error encourtered while connecting to mysql db server
+     **/
+
     private function db_connect() {
         try {            
             $this->db = new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}", $this->dbuser, $this->dbpass);
@@ -58,9 +98,25 @@ class Account {
         }
     }
 
+    /**
+     * closes db connection.
+     **/
+    
     private function db_close_connection() {
         $this->db = null;
     }
+
+    /**
+     * checks if current session have valid (already exist) login credentials.
+     *
+     * @return bool indicated session is valid or not.
+     * @throws SessionException if the one or more session parameter is empty,
+     *                          note that session parameters are subject to input filer 
+     *                          to prevent input related security attacks.
+     *
+     *                          
+     * @uses $_SESSION['login_email'] and $_SESSION['login_password'] to read login data.
+     **/
 
     public function check_session() { //use session_start() outside this function
 
@@ -103,7 +159,16 @@ class Account {
         return false;
         
     } 
-            
+
+    /** updates session data with new email and password.
+     *
+     *@param string $email represents the new email.
+     *@param string $pass represnts the new password, note the password will be stored hashed in the session variable.
+     *@param bool $is_hashed optional argument indicated whether
+     *                       the passed password doesn't need to be 
+     *                       hashed internally or not.
+     * @throws InvalidArgumentException if the provided email is not a valid email.
+     **/
 
     public function update_session_data($email, $pass, $is_hashed = true) //use session_start() outside this function
     {
@@ -124,7 +189,27 @@ class Account {
         $_SESSION['login_email'] = $this->filter_input($email);
         $_SESSION['login_password'] = $this->filter_input($pass);
     }
+
     
+    /**
+     * gets account's data from db.
+     *
+     * @return array indicates the logged in user info,
+     *                 or empty array if doesn't exist in database.
+     * @param string $email login email.
+     * @param string $pass login password.
+     *@param bool $is_hashed optional argument indicated whether
+     *                       the passed password doesn't need to be 
+     *                       hashed internally or not, note that the 
+     *                       password will be stored hash in session
+     *                       and db.
+     * @throws InvalidArgumentException if the email isnot a valid email
+     *                                  or one or more the arguments are
+     *                                  empty.
+     * @throws DBException if getting the login account info from db failed
+     *                     or the db connection encountered a problem.
+     **/
+
     public function validate_login_credentials($email,$pass,$is_hashed = true)
     {
         
@@ -180,6 +265,22 @@ class Account {
     }
 
 
+    /**
+     * creates a new account with a new api key associated to it.
+     *
+     * @return int new the account id.
+     * @param string $email the new account email.
+     * @param string $password the new account password.
+     * @param string $username the new account user name.
+     * @param bool $is_hashed optional argument indicated whether
+     *                       the passed password doesn't need to be 
+     *                       hashed internally or not, note that the 
+     *                       password will be stored hash in session
+     *                       and db. 
+     * @throws InvalidArgumentException if one or more arguments are empty
+     *                                  or $email is not a valid email.
+     **/
+    
     public function create_new_account($email,$password,$username, $is_hashed = true) { // check if them are required to function or just username
         
         try {
@@ -236,7 +337,17 @@ class Account {
         $this->db_close_connection();
         $this->update_session_data($email, $pass); 
     }
+
     
+    /**
+     * checks it the given email availiable, i.e. it can be used to register a new 
+     * account.
+     *
+     * @return bool indicates the email is avaliable for registeration.
+     * @param string $email email to check for.
+     * @throws InvalidArgumentException if $email isnot a valid email.
+     **/
+
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -270,6 +381,14 @@ class Account {
         return false;
     }
 
+    /** 
+     * encodes the passed password, to avoid URL clashes.
+     *
+     * @return string the base62 encoded password.
+     * @param string $data the password to hash.
+     **/
+
+
     private function base62_encode ($data) {
         /* 
          * Used to hash reset password token correctly,
@@ -290,6 +409,16 @@ class Account {
         }
         return $outstring;
     }
+
+    /**
+     * generates a new password reset token, and store it in db.
+     *
+     * @return string the generated reset token string.
+     * @param string $id the account id to generate password token for.
+     * @throws DBException if the db connection encountered a problem or
+     *                     the generate password token db process has
+     *                     failed.
+     **/
 
     public function generate_password_token($id) {
         // generate it and store in db
@@ -331,6 +460,21 @@ class Account {
         $this->db_close_connection();
         return $encoded_token;
     }
+    
+    /**
+     * updates password, both in db and session.
+     *
+     * @param string $email account email to update password for.
+     * @param string $password the new passsword.
+     * @param bool $is_hashed optional argument indicated whether
+     *                       the passed password doesn't need to be 
+     *                       hashed internally or not, note that the 
+     *                       password will be stored hash in session
+     *                       and db. 
+     * @throws InvalidArgumentException if $email or $password is empty.
+     * @throws DBException if db connection encounters a problem or
+     *                     or updating password has failed in db.
+     **/
 
     public function update_password($email,$password, $is_hashed = true) {
 
@@ -399,7 +543,10 @@ class Account {
             
         $this->db_close_connection();
     }
-
+    /**
+     * logout , erases login data from session
+     **/
+    
     public function logout() { //session_start() outside this function
         session_start();
         unset($_SESSION['login_email']);

@@ -1,17 +1,39 @@
 <?php
 require_once 'vendor/autoload.php';
 
-class API {
+class API {   
+    /**
+     * @var string $dbhost mysql db host name or ip to use when quering data.
+     *
+     * @var string $dbname mysql db name to get data from.
+     *
+     * @var string $dbuser mysql db user to use.
+     *
+     * @var string $dbpass mysql db password to use
+     *
+     **/
 
     private $dbhost;
     private $dbname;
     private $dbuser;
     private $dbpass;
+
+    /**
+     * @var string $api_keys_table the api keys table name.
+     *
+     * @var string $api_keys_table the accounts table name.
+     *
+     * @var string $api_keys_table the plan table name.
+     **/
     
     private $api_keys_table;
     private $accounts_table;
     private $plans_table;
-    
+
+    /**
+     * @todo add phpdotenv exception documentation.
+     **/
+
     public function __construct() {
 
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -29,7 +51,14 @@ class API {
         $this->accounts_table = $_ENV['DB_PLANS_TABLE'];
         
     }
-    
+    /**
+     * establishes db connection.
+     *
+     * @return PDO represents the db connection object
+     *
+     * @throws DBException if an error encourtered while connecting to mysql db server
+     */
+
     private function db_connect() {        
         try {
             $this->db = new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}", $this->dbuser, $this->dbpass);
@@ -44,10 +73,24 @@ class API {
         }
         return $this->db;
     }
-
+    /**
+     * closes db connection established by db_connect().
+     *
+     **/
+    
     private function db_close_connection() {
         $this->db = null;
     }
+
+    /**
+     * creates a new api key with a free plan asscoiated to it.
+     *
+     * @return int return the new key id (as int).
+     * @param $accountid represents account id to add api key for
+     * @param $accountid represents plan id to attach api key to
+     * @throws DBException if db has problem with connection or
+     *                     select query cannot be executed.
+     **/
 
     public function create_new_key($accountid,$planid)
     {
@@ -112,13 +155,29 @@ class API {
         return NULL;
         
     }
-        
+    
+    /**
+     * gerenrates a new api key string.
+     *
+     * @return string represent api key string (random and unique id).
+     **/
+
     public function generate_apikey_string () {
         // until we change implementation, this is enough now
             
         return uniqid();
     }
-        
+
+    
+    /**
+     * revokes the old api key string, and replace it with a new string.
+     *
+     * @param $keyid key id to regenerate api string to.
+
+     * @throws DBException if db connection encounters a problem or
+     *                     or update statment failed.
+     **/
+
     public function regenerate_key($keyid) { 
         $key = $this->generate_apikey_string();
         
@@ -147,7 +206,18 @@ class API {
     
         }
 
-    } 
+    }
+    
+    /**
+     * changes the account plan for the given api key.
+     *
+     * @return int Indicates the number of items.
+     * @param $keyid represents key id to change plan for.
+     * @param $targetplanid represents the new plan id.
+     * @throws DBException if db connection encounter a problem or
+     *                          the change process failed at some point.
+     **/
+
 
     public function change_account_plan($keyid, $targetplanid)
     {
@@ -191,7 +261,17 @@ class API {
             throw $exception;             
         }
     }
-              
+
+    
+    /**
+     * changes the plan name for the given api key.
+     *
+     * @return string represnets key's plan name.
+     * @param int $keyid represents key id to get plan for.
+     * @throws DBException if the db connection encounters a problem or
+     *                     getting name process failed.
+     **/
+
     public function get_plan_name($keyid) {
         try {
             $db = $this->db_connect();
@@ -232,6 +312,16 @@ class API {
         $this->db_close_connection();
         return null;
     }
+
+
+    /**
+     * gets the remaining time before considering the given api key expired.x
+     *
+     * @return int indicated the remaining time untile account plan expirity (as UNIX timestamp) .
+     * @param int $keyid represents key id to get expirity time for.
+     * @throws DBException if db connection problem encoutered a problem or 
+     *                     getting expirity process failed.
+     **/
         
     public function get_account_plan_expirty($keyid) { 
 
@@ -280,6 +370,16 @@ class API {
         return NULL;  
     }
 
+    /**
+     * gets the api key last referrer.
+     *
+     * @return string represents api key referrer (as ip string or host name). 
+     * @param int $keyid represents the key id to get referred for.
+     * @throws DBException if the db connection encountered a problem or
+     *                     getting referrer process has failed.
+     **/
+
+
     public function get_referrer($keyid)  {
         try {
 
@@ -306,6 +406,15 @@ class API {
         return null;
         
     }
+
+    /** 
+     * gets the remaining api key requests number that it's allowed to use.
+     *
+     * @return int represent the number remaining reuqests for api key.
+     * @param int $keyid represents the api key id to get the number of avaliable requests for.
+     * @throws DBException if the db connection encountered a problem or
+     *                     getting required info process from db has failed.
+     **/
     
     public function get_remaining_quotas($keyid)
     {
