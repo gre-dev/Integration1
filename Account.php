@@ -445,7 +445,7 @@ class Account {
             
             $result = $stmt->execute($data);
     
-            if (!$result || $stmt->rowCount() !== 1) // affected rows ///
+            if (!$result)
             {
                 $exception = new DBException (DBException::DB_ERR_INSERT);
                 $exception->set_insert_data("Error while storing password token for account $id");
