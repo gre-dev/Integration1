@@ -76,7 +76,7 @@ class Account {
     }
 
     /**
-     * established db connection. ///
+     * establishes the db connection.
      *
      * @return PDO represents the db connection object
      *
