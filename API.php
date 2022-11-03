@@ -163,9 +163,38 @@ class API {
      **/
 
     public function generate_apikey_string () {
-        // until we change implementation, this is enough now
+
+        do {
+            $string = uniqid();
+            $string = md5($string);
             
-        return uniqid();
+            try {
+                $db = $this->db_connect();
+                $stmt = $db->prepare("SELECT COUNT(api_key) FROM {$this->api_keys_table} WHERE api_key = :key");
+                
+                $data = array (
+                    'key' => $string,
+                );
+                $result = $stmt->execute($data);
+                
+                if ($result === false) {
+                    $exception = new DBException(DBException::DB_ERR_SELECT);
+                    $exception->set_select_data("Error while ensuring api key uniqueness");
+                    throw $exception;
+                }
+            }
+            
+            catch (PDOException $e) {
+                $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+                $exception->set_select_data("Error while ensuring api key uniqueness in db");
+                throw $exception;             
+            }
+            
+            $matches = $stmt->fetchColumn();
+            
+        } while ($matches !== 0);
+            
+        return $string;
     }
 
     
@@ -205,7 +234,7 @@ class API {
             throw $exception;             
     
         }
-
+        
     }
     
     /**
