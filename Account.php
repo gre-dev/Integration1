@@ -176,7 +176,7 @@ class Account {
         
         // maybe checking account password is strong, notice
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string");
+            throw new InvalidArgumentException("Email passed doesn't look like an email string",1);
         }
         if ($is_hashed === false) {
             $hashoptions = [
@@ -214,7 +214,7 @@ class Account {
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string");
+            throw new InvalidArgumentException("Email passed doesn't look like an email string",1);
         }
         
         if (empty($email) || empty($pass)) {
@@ -289,7 +289,7 @@ class Account {
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new InvalidArgumentException("Email arg doesn't look like an email string");
+                throw new InvalidArgumentException("Email arg doesn't look like an email string",1);
             }
             
             $db = $this->db_connect();
@@ -351,7 +351,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed $email doesn't looks like sanitized email");
+            throw new InvalidArgumentException("Email passed $email doesn't looks like sanitized email",1);
         }
         
         try {

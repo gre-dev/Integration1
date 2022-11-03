@@ -7,6 +7,13 @@
 
 ## Error Codes:
 
+### `SessionException`:
 |  Code |  Description |
 |---|---|
 |  `ERR_CODE_DATA_NOT_FOUND`  |  this is used when you expect some fields in session and you can't find them  |
+
+
+### `InvalidArgumentException`:
+|  Code |  Description |
+|---|---|
+|  1  | pass it to `InvalidArgumentException` when you encountered unsanitized email passed as argument  |
