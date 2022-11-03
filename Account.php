@@ -1,11 +1,11 @@
 <?php
 
 require_once 'API.php';
-require_once './Exceptions/DBException.php';
-require_once './Exceptions/SessionException.php';
-require_once './Traits/InputHandleTrait.php';
+require_once __DIR__ . '/Exceptions/DBException.php';
+require_once __DIR__ . '/Exceptions/SessionException.php';
+require_once __DIR__ . '/Traits/InputHandleTrait.php';
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 class Account {
 
