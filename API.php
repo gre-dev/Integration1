@@ -361,7 +361,7 @@ class API {
      *                     getting expirity process failed.
      **/
         
-    public function get_account_plan_expirty($keyid) { 
+    public function get_account_plan_expiry($keyid) { 
 
         try {
             $db = $this->db_connect();
