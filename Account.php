@@ -242,7 +242,7 @@ class Account {
 
             if (!$success) {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while performing login credentials checking queries: Email $email, Password $pass");
+                $exception->set_select_data("Error while performing login credentials.");
                 throw $exception;
             }
 
@@ -256,7 +256,7 @@ class Account {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT);
-            $exception->set_select_data("while performing login credentials checking queries: Email $email, Password $pass");
+            $exception->set_select_data("while performing login credentials.");
             throw $exception;
         }
 

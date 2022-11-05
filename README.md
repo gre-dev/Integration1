@@ -10,10 +10,12 @@
 ### `SessionException`:
 |  Code |  Description |
 |---|---|
-|  `ERR_CODE_DATA_NOT_FOUND`  |  this is used when you expect some fields in session and you can't find them  |
+|  1  |  'login_email' is missing in session  |
+|  2  |  'login_password' is missing in session  |
 
 
 ### `InvalidArgumentException`:
 |  Code |  Description |
 |---|---|
-|  1  | pass it to `InvalidArgumentException` when you encountered unsanitized email passed as argument  |
+|  1  | email argument is not valid (either not an email string, or is empty) |
+|  2  | password argument is not good (empty string)
