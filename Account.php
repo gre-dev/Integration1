@@ -35,7 +35,12 @@ class Account {
 
     private $api_keys_table;
     private $accounts_table;
+    
+    public function test() {
 
+        $this->validate_login_credentials('s@os.c','s','s');
+    }
+    
     
     /**
      * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
@@ -129,10 +134,14 @@ class Account {
             $email = $this->revert_filtered($email);
             $password = $this->revert_filtered($password);
 
-            if (empty($email) || empty($password)) {
-                throw new SessionException(SessionException::ERR_DATA_NOT_FOUND);
+            if (empty($email)) {
+                throw new SessionException(SessionException::ERR_EMAIL_NOT_FOUND);
             }
-            
+
+            if (empty($password)) {
+                throw new SessionException(SessionException::ERR_PASS_NOT_FOUND);
+            }
+
             try {
                 $db = $this->db_connect();
 
@@ -218,8 +227,8 @@ class Account {
             throw new InvalidArgumentException("Email passed doesn't look like an email string",1);
         }
         
-        if (empty($email) || empty($pass)) {
-            throw new InvalidArgumentException("Some or all args are empty strings");
+        if ( empty($pass)) {
+            throw new InvalidArgumentException("Password is empty string",2);
         }
 
         if ($is_hashed === false) {
@@ -285,8 +294,12 @@ class Account {
     public function create_new_account($email,$password,$username, $is_hashed = true) { // check if them are required to function or just username
         
         try {
-            if (empty($password) || empty($username)) {
-                throw new InvalidArgumentException("Some args are empty strings");
+            if (empty($password)) {
+                throw new InvalidArgumentException("Password is empty",2);
+            }
+            
+            if (empty($username)) {
+                throw new InvalidArgumentException("User name is empty",3);
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -479,8 +492,13 @@ class Account {
 
     public function update_password($email,$password, $is_hashed = true) {
 
-        if (empty($password) || empty($email)) {
-            throw new InvalidArgumentException ('Either email or password args passed is empty');
+        
+        if (empty($email)) {
+            throw new InvalidArgumentException ('Email is empty',1);
+        }
+        
+        if (empty($password)) {
+            throw new InvalidArgumentException ('Password is empty',2);
         }
         
         try {

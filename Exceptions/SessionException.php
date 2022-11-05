@@ -11,7 +11,8 @@ class SessionException extends Exception
 
     // don't use enums for php < 8.1 compatibility
 
-    const ERR_DATA_NOT_FOUND = 1;
+    const ERR_EMAIL_NOT_FOUND = 1;
+    const ERR_PASS_NOT_FOUND = 2;
 
 /**
  * @param int $code error code to set.
@@ -36,7 +37,8 @@ class SessionException extends Exception
         $error_str .= "Error {$this->code}: ";
         
         $error_table = array (
-            self::ERR_DATA_NOT_FOUND  =>  "login data (password or email) does't exist in current session",
+            self::ERR_EMAIL_NOT_FOUND  =>  "email doesn't exist in the current session",
+            self::ERR_PASS_NOT_FOUND  =>  "password does't exist in the current session"
         );
         
         $error_str .= $error_table[$this->code] ;

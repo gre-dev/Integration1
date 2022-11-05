@@ -15,7 +15,8 @@
 
 
 ### `InvalidArgumentException`:
-|  Code |  Description |
-|---|---|
-|  1  | email argument is not valid (either not an email string, or is empty) |
-|  2  | password argument is not good (empty string)
+| Code | Description                                                           |
+|------|-----------------------------------------------------------------------|
+| 1    | email argument is not valid (either not an email string, or is empty) |
+| 2    | password argument is not good (empty string)                          |
+| 3    | user name argument is not valid (empty string)                         |

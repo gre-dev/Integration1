@@ -25,7 +25,12 @@ class API {
      *
      * @var string $api_keys_table the plan table name.
      **/
-    
+
+    public function test() {
+        $this->change_account_plan(1, 'sw');
+
+}
+
     private $api_keys_table;
     private $accounts_table;
     private $plans_table;
@@ -258,12 +263,10 @@ class API {
      **/
 
 
-    public function change_account_plan($keyid, $targetplanid)
+    public function change_account_plan(int $keyid, int $targetplanid)
     {
         try {
-            if (empty($keyid) || empty($targetplanid)) {
-                throw new InvalidArgumentException("Some or all args are empty strings");
-            }
+
             $db = $this->db_connect();
 
             $planStmt = $db->prepare("SELECT COUNT(id) from {$this->plans_table} where id = ?");
