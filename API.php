@@ -417,19 +417,8 @@ class API {
 
 
     public function get_referrer()  {
-        $referrer = '';
-        
-        if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  
-            $referrer = $_SERVER['HTTP_CLIENT_IP'];  
-        }  
-        
-        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  
-            $referrer = $_SERVER['HTTP_X_FORWARDED_FOR'];  
-        }  
-        else{  
-            $referrer = $_SERVER['REMOTE_ADDR'];  
-        }
-       
+        $referrer = $_SERVER['HTTP_REFERER'];
+               
         return $referrer;
     }
     /** 
