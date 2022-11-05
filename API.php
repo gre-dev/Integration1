@@ -409,42 +409,28 @@ class API {
     }
 
     /**
-     * gets the api key last referrer.
+     * gets the connection referrer.
      *
-     * @return string represents api key referrer (as ip string or host name). 
-     * @param int $keyid represents the key id to get referred for.
-     * @throws DBException if the db connection encountered a problem or
-     *                     getting referrer process has failed.
+     * @return string represents referrer (as ip string or host name). 
      **/
 
 
-    public function get_referrer($keyid)  {
-        try {
-
-            $db = $this->db_connect();
-            
-            $stmt = $db->prepare("SELECT referrer FROM {$this->api_keys_table} WHERE id = :id LIMIT 1");
-
-            if ($stmt->execute(array($keyid))) {
-                $referrer = $stmt->fetchColumn();
-                
-                $this->db_close_connection();
-                return $referrer;
-            };
-        }
-
-        catch (PDOException $e) {
-            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
-            $exception->set_select_data("Error while getting referrer for key $keyid from db");
-            throw $exception;
-           
-        }
+    public function get_referrer()  {
+        $referrer = '';
         
-        $this->db_close_connection();
-        return null;
+        if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  
+            $referrer = $_SERVER['HTTP_CLIENT_IP'];  
+        }  
         
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  
+            $referrer = $_SERVER['HTTP_X_FORWARDED_FOR'];  
+        }  
+        else{  
+            $referrer = $_SERVER['REMOTE_ADDR'];  
+        }
+       
+        return $referrer;
     }
-
     /** 
      * gets the remaining api key requests number that it's allowed to use.
      *
