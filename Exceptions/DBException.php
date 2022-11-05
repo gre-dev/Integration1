@@ -26,8 +26,6 @@ class DBException extends Exception
      * @var int $pdoexception internal PDOException
      **/
 
-
-    private int $error_code;
     private $pdoexception;
 
      /**
@@ -52,7 +50,7 @@ class DBException extends Exception
     public function __construct(int $code, PDOException $exception = null) {
         parent::__construct();
 
-        $this->error_code = $code;
+        $this->code = $code;
         $this->pdoexception = $exception;
         $this->message = $this->updateMessage();
     }
@@ -132,7 +130,7 @@ class DBException extends Exception
     private function updateMessage() {
 
         $error_str = "";
-        $error_str .= "Error {$this->error_code}: ";
+        $error_str .= "Error {$this->code}: ";
 
         $error_table = array (
 
@@ -144,7 +142,7 @@ class DBException extends Exception
             self::DB_ERR_CUSTOM        => "{$this->getmessage()}",
         );
 
-        $error_str .= $error_table[$this->error_code] ;
+        $error_str .= $error_table[$this->code] ;
 
         if (isset($this->pdoexception) && $this->pdoexception instanceof PDOException) {
             $error_str .= " \n" . $this->pdoexception;
