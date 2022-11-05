@@ -243,7 +243,8 @@ class API {
             throw $exception;             
     
         }
-        
+
+        return $key;
     }
     
     /**
