@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . 'API.php';
+require_once __DIR__ . '/API.php';
 require_once __DIR__ . '/Exceptions/DBException.php';
 require_once __DIR__ . '/Exceptions/SessionException.php';
 require_once __DIR__ . '/Traits/InputHandleTrait.php';
