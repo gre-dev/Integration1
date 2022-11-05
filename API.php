@@ -417,7 +417,7 @@ class API {
 
 
     public function get_referrer()  {
-        $referrer = $_SERVER['HTTP_REFERER'];
+        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
                
         return $referrer;
     }
