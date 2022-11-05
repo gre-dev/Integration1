@@ -343,7 +343,7 @@ class API {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_CONN_WRONG_DATA,$e);
-            $exception->set_connection_wrong_data("Error while connecting to db, please check if server login credentials is correct: Username {$this->dbuser}, Password {$this->dbpass}");
+            $exception->set_connection_wrong_data("Error while connecting to db, please check if server login credentials is correct.");
             throw $exception;             
         }
         
