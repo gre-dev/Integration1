@@ -359,7 +359,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed $email doesn't looks like sanitized email",1);
+            throw new InvalidArgumentException("Email passed doesn't looks like sanitized email",1);
         }
         
         try {
