@@ -35,12 +35,7 @@ class Account {
 
     private $api_keys_table;
     private $accounts_table;
-    
-    public function test() {
-        
-        $this->validate_login_credentials('s@os.c','s','s');
-    }
-        
+           
 
     /**
      * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
