@@ -37,11 +37,11 @@ class Account {
     private $accounts_table;
     
     public function test() {
-
+        
         $this->validate_login_credentials('s@os.c','s','s');
     }
-    
-    
+        
+
     /**
      * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
      **/
@@ -345,7 +345,6 @@ class Account {
         catch (PDOException $e) {
 
             $exception = new DBException(DBException::DB_ERR_INSERT);
-            $exception->set_insert_data("Error while adding a new account to db");
             throw $exception;
         }
         $this->db_close_connection();
@@ -461,13 +460,11 @@ class Account {
             if (!$result)
             {
                 $exception = new DBException (DBException::DB_ERR_INSERT);
-                $exception->set_insert_data("Error while storing password token for account $id");
                 throw $exception;
             }
         }
         catch (PDOException $e) {   
             $exception = new DBException (DBException::DB_ERR_INSERT,$e);
-            $exception->set_insert_data("Error while storing password token for account $id in db");
             throw $exception;
         }
         
@@ -549,14 +546,12 @@ class Account {
             if (!$result)
             {
                 $exception = new DBException(DBException::DB_ERR_UPDATE);
-                $exception->set_update_data("password for account $accountId");
                 throw $exception;
             }
             $this->update_session_data($email, $passhash);
 
         }        catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_UPDATE, $e);
-            $exception->set_update_data("Error while updating password for account $accountId in db");
             throw $exception;
         }
             

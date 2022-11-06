@@ -119,7 +119,6 @@ class API {
             if (!$result || $planStmt->fetchColumn() === 0)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while checking plan $planid avaliablily");
                 throw $exception;             
             }
             
@@ -129,7 +128,6 @@ class API {
             if (!$result || $accountStmt->fetchColumn() === 0)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while ensuring account $accountid exists in db");
                 throw $exception;             
 
             }
@@ -147,7 +145,6 @@ class API {
 
             if (!$result) {
                 $exception = new DBException(DBException::DB_ERR_INSERT);
-                $exception->set_insert_data("Error while adding a new api key for account $accountid, plan $planid");
                 throw $exception;             
             }
 
@@ -159,7 +156,6 @@ class API {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_INSERT,$e);
-            $exception->set_insert_data("Error while adding a new api key for account $accountid, plan $planid in db");
             throw $exception;             
 
             
@@ -238,13 +234,11 @@ class API {
             
             if (!$result) {
                 $exception = new DBException(DBException::DB_ERR_UPDATE);
-                $exception->set_update_data("Error while updating key $keyid string");
                 throw $exception;
             }
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_UPDATE,$e);
-            $exception->set_update_data("Error while updating api key $keyid string in db");
             throw $exception;             
     
         }
@@ -275,7 +269,6 @@ class API {
             if (!$result || $planStmt->fetchColumn() === 0)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while ensuring plan $targetplanid is in db");
                 throw $exception;             
             }
             
@@ -291,7 +284,6 @@ class API {
             if (!$result)
             {
                 $exception = new DBException(DBException::DB_ERR_UPDATE);
-                $exception->set_update_data("Error while updating plan $planid for key $keyid");
                 throw $exception;             
             
             }
@@ -299,7 +291,6 @@ class API {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_UPDATE,$e);
-            $exception->set_update_data("Error while updating plan $planid for key $keyid in db");
             throw $exception;             
         }
     }
@@ -324,7 +315,6 @@ class API {
             if (!$result || $keyStmt->fetchColumn() === 0)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while getting key $keyid");
                 throw $exception;             
                 
             }
@@ -336,7 +326,6 @@ class API {
             if (!$result)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while getting plan name for api $keyid");
                 throw $exception;             
 
             }
@@ -378,7 +367,6 @@ class API {
             {
                 
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while get api key $keyid plan expirity");
                 throw $exception;
             
             }
@@ -392,7 +380,6 @@ class API {
             if ($planperiod === false)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while get plan period {$key->plan_id} expirty value");
                 throw $exception;
             
             }
@@ -403,7 +390,6 @@ class API {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
-            $exception->set_select_data("Error while get api key $keyid expirty values in db");
             throw $exception;
            
         }
@@ -445,7 +431,6 @@ class API {
             if (!$key)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while getting requests number for key $keyid");
                 throw $exception;
             
             }           
@@ -453,7 +438,6 @@ class API {
         
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
-            $exception->set_select_data("Error while getting remaining requests (quotas) for key $keyid in db");
             throw $exception;
         }
         
@@ -470,7 +454,6 @@ class API {
             {
 
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while getting plan $planid requests");
                 throw $exception;
             }
 
@@ -479,7 +462,6 @@ class API {
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
-            $exception->set_select_data("Error while getting remaining requests (quotas) for key $keyid, plan $planid in db",$e);
             throw $exception;
         }
 
