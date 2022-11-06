@@ -343,14 +343,13 @@ class Account {
             throw $exception;
         }
         $this->db_close_connection();
-        $this->update_session_data($email, $pass); 
+        $this->update_session_data($email, $password); 
     }
 
     
     /**
      * checks it the given email availiable, i.e. it can be used to register a new 
      * account.
-     *
      * @return bool indicates the email is avaliable for registeration.
      * @param string $email email to check for.
      * @throws InvalidArgumentException if $email isnot a valid email.
