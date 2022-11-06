@@ -6,7 +6,7 @@ class SessionException extends Exception
     
 
 /**
- * @var ERR_DATA_NOT_FOUND an error constant used for printing exception message.
+ *  ERR_* error constants used for printing the right exception message.
  **/
 
     // don't use enums for php < 8.1 compatibility
