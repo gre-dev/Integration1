@@ -8,10 +8,11 @@
 ## Error Codes:
 
 ### `SessionException`:
-|  Code |  Description |
-|---|---|
-|  1  |  'login_email' is missing in session  |
-|  2  |  'login_password' is missing in session  |
+| Code | Description                            |
+|------|----------------------------------------|
+| 1    | 'login_email' is missing in session    |
+| 2    | 'login_password' is missing in session |
+
 
 
 ### `InvalidArgumentException`:
@@ -19,7 +20,8 @@
 |------|-----------------------------------------------------------------------|
 | 3    | email argument is not valid (either not an email string, or is empty) |
 | 4    | password argument is not good (empty string)                          |
-| 5    | user name argument is not valid (empty string)                         |
+| 5    | user name argument is not valid (empty string)                        |
+
 
 ### `Exception`
 | Code | Description                                 |
