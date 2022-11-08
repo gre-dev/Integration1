@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 31, 2022 at 04:28 PM
+-- Generation Time: Nov 08, 2022 at 02:57 PM
 -- Server version: 8.0.23-3+b1
 -- PHP Version: 8.1.3
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `first`
+-- Database: `first_copy`
 --
 
 -- --------------------------------------------------------
@@ -52,13 +52,6 @@ CREATE TABLE `api_keys` (
   `date` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `api_keys`
---
-
-INSERT INTO `api_keys` (`id`, `account_id`, `plan_id`, `api_key`, `requests`, `referrer`, `date`) VALUES
-(5, 12, 1, '635fcc8142b5f', 0, NULL, 1667222657);
-
 -- --------------------------------------------------------
 
 --
@@ -78,6 +71,21 @@ CREATE TABLE `api_keys_plans` (
 
 INSERT INTO `api_keys_plans` (`id`, `name`, `max_requests`, `period`) VALUES
 (1, 'l', 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `requests_info`
+--
+
+CREATE TABLE `requests_info` (
+  `id` int NOT NULL,
+  `type` text NOT NULL,
+  `value` longtext,
+  `api_key_id` int NOT NULL,
+  `referrer` text,
+  `time` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Indexes for dumped tables
@@ -103,6 +111,12 @@ ALTER TABLE `api_keys_plans`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `requests_info`
+--
+ALTER TABLE `requests_info`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -110,19 +124,25 @@ ALTER TABLE `api_keys_plans`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `api_keys`
 --
 ALTER TABLE `api_keys`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `api_keys_plans`
 --
 ALTER TABLE `api_keys_plans`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `requests_info`
+--
+ALTER TABLE `requests_info`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
