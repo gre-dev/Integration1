@@ -22,7 +22,9 @@
 | 5    | user name argument is not valid (empty string)                         |
 
 ### `Exception`
-| Code | Description                                                           |
-|------|-----------------------------------------------------------------------|
-| 6    | the given api key doesn't exist in database                           |
+| Code | Description                                 |
+|------|---------------------------------------------|
+| 6    | the given api key doesn't exist in database |
+| 7    | the given log type is empty string          |
+
 

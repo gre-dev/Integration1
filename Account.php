@@ -609,16 +609,12 @@ class Account {
      * @throws Exception if the api key doesn't exist
      **/
 
-    public function log_api_request(int $api_key_id, $value, $type) {
+    public function log_api_request(int $api_key_id, string $value, $type) {
 
         $this->ensure_apikey_exists($api_key_id);
         
         if (empty($type)) {
-            throw new InvalidArgumentException("Log type is empty",6);
-        }
-            
-        if (empty($value)) {
-            throw new InvalidArgumentException("Log value is empty",7);
+            throw new InvalidArgumentException("Log type is empty",7);
         }
 
         $referrer = $_SERVER['HTTP_REFERER'] ?? '';
