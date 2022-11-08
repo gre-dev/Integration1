@@ -35,6 +35,7 @@ class Account {
 
     private $api_keys_table;
     private $accounts_table;
+    private $requests_info_table;
            
 
     /**
@@ -60,7 +61,7 @@ class Account {
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
-        $dotenv->required(['DB_ACCOUNTS_TABLE', 'DB_API_KEYS_TABLE']);
+        $dotenv->required(['DB_ACCOUNTS_TABLE', 'DB_API_KEYS_TABLE','DB_REQUESTS_INFO_TABLE']);
 
         $this->dbhost = $_ENV['DB_HOST'];
         $this->dbname = $_ENV['DB_NAME'];
@@ -69,6 +70,7 @@ class Account {
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->plans_table = $_ENV['DB_ACCOUNTS_TABLE'];
+        $this->requests_info_table = $_ENV['DB_REQUESTS_INFO_TABLE'];
 
         $dotenv->ifPresent('PLAN_FREE_ID')->isInteger();
         $this->PLAN_FREE_ID = $_ENV['PLAN_FREE_ID'] ?? 1;
@@ -157,7 +159,7 @@ class Account {
             catch (PDOException $e) {
                 $exception = new DBException(DBException::DB_ERR_SELECT,$e);
                 $exception->set_select_data( "Error while checking user session data in db");
-                throw  $exception;
+                throw $exception;
             }
         }
         $this->db_close_connection();
@@ -559,6 +561,97 @@ class Account {
         session_start();
         unset($_SESSION['login_email']);
         unset($_SESSION['login_password']);
+    }
+
+    
+    /**
+     * ensures if the api key id is in db
+     *
+     * @param int $api_key_id the api request key id 
+     *
+     * @throws DBException if an error encourtered while connecting to mysql db server, or can't query the db
+     * @throws Exception if the api key doesn't exist
+     **/
+
+    private function ensure_apikey_exists(int $keyid) {
+
+        try {
+            $db = $this->db_connect();
+            
+            $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->api_keys_table} WHERE id = ?");
+            
+            $stmt->execute(array($keyid));
+            $rows = $stmt->fetchColumn();
+            
+            if ($rows === 1) {
+                $this->db_close_connection();
+                return true;
+            }
+        }
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data( "Error while ensuring api key is in db");
+            throw  $exception;
+        }
+
+        $this->db_close_connection();
+        throw new Exception('No such Api Key',6);
+    }
+    
+    /**
+     * adds the an api request to log
+     *
+     * @param int $api_key_id the api request key id 
+     * @param string $type the request type 
+     * @param string $value log entry value
+     *
+     * @throws DBException if an error encourtered while connecting to mysql db server, or can't insert log row
+     * @throws Exception if the api key doesn't exist
+     **/
+
+    public function log_api_request(int $api_key_id, $value, $type) {
+
+        $this->ensure_apikey_exists($api_key_id);
+        
+        if (empty($type)) {
+            throw new InvalidArgumentException("Log type is empty",6);
+        }
+            
+        if (empty($value)) {
+            throw new InvalidArgumentException("Log value is empty",7);
+        }
+
+        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
+
+        try {
+            $db = $this->db_connect();
+            $stmt = $db->prepare("INSERT INTO {$this->requests_info_table} (type,value, api_key_id, referrer,time) VALUES (:type, :value,:api_key_id, :referrer, :time)");
+
+            $data = [
+                'type' => $type,
+                'value'    => $value,
+                'api_key_id'     => $api_key_id,
+                'referrer'    => $referrer,
+                'time'        =>  time()   
+                
+            ];
+            
+            $result = $stmt->execute($data);
+            if ($result === false || $stmt->rowCount() !== 1) {
+                $exception = new DBException(DBException::DB_ERR_INSERT);
+                $exception->set_insert_data("Error while adding a new request log");
+                throw $exception;
+            }                
+        }
+        
+        catch (PDOException $e) {
+
+            $exception = new DBException(DBException::DB_ERR_INSERT);
+            throw $exception;
+        }
+        
+        $this->db_close_connection();
+
     }
 
 }
