@@ -181,7 +181,7 @@ class Account {
         
         // maybe checking account password is strong, notice
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string",1);
+            throw new InvalidArgumentException("Email passed doesn't look like an email string",3);
         }
         if ($is_hashed === false) {
             $hashoptions = [
@@ -219,11 +219,11 @@ class Account {
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string",1);
+            throw new InvalidArgumentException("Email passed doesn't look like an email string",3);
         }
         
         if ( empty($pass)) {
-            throw new InvalidArgumentException("Password is empty string",2);
+            throw new InvalidArgumentException("Password is empty string",4);
         }
 
         if ($is_hashed === false) {
@@ -290,15 +290,15 @@ class Account {
         
         try {
             if (empty($password)) {
-                throw new InvalidArgumentException("Password is empty",2);
+                throw new InvalidArgumentException("Password is empty",4);
             }
             
             if (empty($username)) {
-                throw new InvalidArgumentException("User name is empty",3);
+                throw new InvalidArgumentException("User name is empty",5);
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new InvalidArgumentException("Email arg doesn't look like an email string",1);
+                throw new InvalidArgumentException("Email arg doesn't look like an email string",3);
             }
             
             $db = $this->db_connect();
@@ -358,7 +358,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't looks like sanitized email",1);
+            throw new InvalidArgumentException("Email passed doesn't looks like sanitized email",3);
         }
         
         try {
@@ -485,11 +485,11 @@ class Account {
 
         
         if (empty($email)) {
-            throw new InvalidArgumentException ('Email is empty',1);
+            throw new InvalidArgumentException ('Email is empty',3);
         }
         
         if (empty($password)) {
-            throw new InvalidArgumentException ('Password is empty',2);
+            throw new InvalidArgumentException ('Password is empty',4);
         }
         
         try {
