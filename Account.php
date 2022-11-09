@@ -29,8 +29,7 @@ class Account {
     
     /**
      * @var string $api_keys_table the api keys table name.
-     *
-     * @var string $api_keys_table the accounts table name.
+     * @var string $accounts_table the accounts table name.
      **/
 
     private $api_keys_table;

@@ -26,14 +26,10 @@ class API {
      * @var string $api_keys_table the plan table name.
      **/
 
-    public function test() {
-        $this->change_account_plan(1, 'sw');
-
-}
-
     private $api_keys_table;
     private $accounts_table;
     private $plans_table;
+    private $requests_info_table;
     
     /**
      * @var PDO $db PDO database object, don't use it directly inside
@@ -53,7 +49,7 @@ class API {
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
-        $dotenv->required(['DB_API_KEYS_TABLE', 'DB_ACCOUNTS_TABLE','DB_PLANS_TABLE']);
+        $dotenv->required(['DB_API_KEYS_TABLE', 'DB_ACCOUNTS_TABLE','DB_PLANS_TABLE','DB_REQUESTS_INFO_TABLE']);
 
         $this->dbhost = $_ENV['DB_HOST'];
         $this->dbname = $_ENV['DB_NAME'];
@@ -63,6 +59,7 @@ class API {
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->plans_table = $_ENV['DB_PLANS_TABLE'];
+        $this->requests_info_table = $_ENV['DB_REQUESTS_INFO_TABLE'];
         
     }
     /**
@@ -404,7 +401,6 @@ class API {
      * @return string represents referrer (as ip string or host name). 
      **/
 
-
     public function get_referrer()  {
         $referrer = $_SERVER['HTTP_REFERER'] ?? '';
                
@@ -467,6 +463,106 @@ class API {
 
         $this->db_close_connection();
         return null;
+    }
+    
+    /**
+     * ensures that apikey is in db.
+     *
+     * @return true if it in api_keys_table, otherwise will not return
+     *                                       (you'll get an exception)
+     * @param $keyid api key's id.
+     * @throws DBException if db has problem with connection or
+     *                     the query cannot be executed.
+     * @throws Exception if didn't find $keyid in api_keys_table.
+     *
+     **/
+    
+    private function ensure_apikey_exists(int $keyid) {
+        
+        try {
+            $db = $this->db_connect();
+            
+            $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->api_keys_table} WHERE id = ?");
+            
+            $stmt->execute(array($keyid));
+            $rows = $stmt->fetchColumn();
+                
+        if ($rows === 1) {
+            $this->db_close_connection();
+            return true;
+        }
+        }
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data( "Error while ensuring api key is in db");
+            throw  $exception;
+        }
+
+        $this->db_close_connection();
+        throw new Exception('No such Api Key',8);
+    }
+    
+    /**
+     * add an entry to api log.
+     *
+     * @return true if it in api_keys_table, otherwise will not return
+     *                                       (you'll get an exception)
+     * @param int $keyid api key's id.
+     * @param string $value is the entry value, can be null but not empty string.
+     * @param string $type represents the entry key.
+     * @throws DBException if db has problem with connection or
+     *                     the insert query cannot be executed.
+     * @throws InvalidException if the $value or $type is empty string. 
+     * 
+     **/
+      
+
+    public function log_api_request(int $api_key_id, $type, $value = null) {
+        
+        $this->ensure_apikey_exists($api_key_id);
+        
+        if (empty($type)) {
+            throw new InvalidArgumentException("Log type is empty",6);
+        }
+        
+        if ($value !== null && empty($value)) {
+            throw new InvalidArgumentException("Log value is empty string",7);
+        }
+        
+        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
+
+        try {
+            $db = $this->db_connect();
+
+            $stmt = $db->prepare("INSERT INTO {$this->requests_info_table} (type,value, api_key_id, referrer,time) VALUES (:type, :value,:api_key_id, :referrer, :time)");
+          
+            $data = [
+                'type' => $type,
+                'value'    => $value,
+                'api_key_id'     => $api_key_id,
+                'referrer'    => $referrer,
+                'time'        =>  time()   
+                
+            ];
+            
+            $result = $stmt->execute($data);
+
+            if ($result === false || $stmt->rowCount() !== 1) {
+                $exception = new DBException(DBException::DB_ERR_INSERT);
+                $exception->set_insert_data("Error while adding a new request log");
+                $this->db_close_connection();
+                throw $exception;
+            }                
+        }
+        
+        catch (PDOException $e) {
+
+            $exception = new DBException(DBException::DB_ERR_INSERT);
+            throw $exception;
+        }
+        
+        $this->db_close_connection();
+
     }
 }
 
