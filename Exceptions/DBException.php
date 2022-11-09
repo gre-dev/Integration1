@@ -14,12 +14,12 @@ class DBException extends Exception
      * @var int DB_ERR_CUSTOM const in exception message
      **/
 
-    const DB_ERR_CONN_WRONG_DATA = 1;
-    const DB_ERR_SELECT = 2;
-    const DB_ERR_INSERT = 3;
-    const DB_ERR_UPDATE = 4 ;
-    const DB_ERR_DELETE = 5;
-    const DB_ERR_CUSTOM = 6; 
+    const DB_ERR_CONN_WRONG_DATA = 8;
+    const DB_ERR_SELECT = 9;
+    const DB_ERR_INSERT = 10;
+    const DB_ERR_UPDATE = 11 ;
+    const DB_ERR_DELETE = 12;
+    const DB_ERR_CUSTOM = 13; 
 
     /**
      * @var int $error_code used to print exception message.

@@ -499,7 +499,7 @@ class API {
         }
 
         $this->db_close_connection();
-        throw new Exception('No such Api Key',8);
+        throw new Exception('No such Api Key',14);
     }
     
     /**
