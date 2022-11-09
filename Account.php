@@ -29,8 +29,7 @@ class Account {
     
     /**
      * @var string $api_keys_table the api keys table name.
-     *
-     * @var string $api_keys_table the accounts table name.
+     * @var string $accounts_table the accounts table name.
      **/
 
     private $api_keys_table;
@@ -138,6 +137,9 @@ class Account {
             if (empty($password)) {
                 throw new SessionException(SessionException::ERR_PASS_NOT_FOUND);
             }
+
+            $email = $this->filter_input($email);
+            $password = $this->filter_input($password);
 
             try {
                 $db = $this->db_connect();
