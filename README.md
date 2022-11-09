@@ -20,3 +20,11 @@
 | 3    | email argument is not valid (either not an email string, or is empty) |
 | 4    | password argument is not good (empty string)                          |
 | 5    | user name argument is not valid (empty string)                         |
+
+### `Exception`
+| Code | Description                                 |
+|------|---------------------------------------------|
+| 6    | the given api key doesn't exist in database |
+| 7    | the given log type is empty string          |
+
+
