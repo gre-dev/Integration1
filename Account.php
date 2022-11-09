@@ -138,6 +138,9 @@ class Account {
                 throw new SessionException(SessionException::ERR_PASS_NOT_FOUND);
             }
 
+            $email = $this->filter_input($email);
+            $password = $this->filter_input($password);
+
             try {
                 $db = $this->db_connect();
 
