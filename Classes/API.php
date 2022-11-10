@@ -20,9 +20,9 @@ class API {
     /**
      * @var string $api_keys_table the api keys table name.
      *
-     * @var string $api_keys_table the accounts table name.
+     * @var string $accounts_table the accounts table name.
      *
-     * @var string $api_keys_table the plan table name.
+     * @var string $plans_table the plan table name.
      **/
 
     private $api_keys_table;
