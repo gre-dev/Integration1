@@ -30,7 +30,7 @@ class API {
     private $accounts_table;
     private $plans_table;
     private $requests_info_table;
-    
+
     /**
      * @var PDO $db PDO database object, don't use it directly inside
      * class method (instead use db_connect and db_close_connection),
@@ -402,7 +402,7 @@ class API {
      **/
 
     public function get_referrer()  {
-        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
+        $referrer = $_SERVER['HTTP_REFERER'] ?? null;
                
         return $referrer;
     }
@@ -529,8 +529,7 @@ class API {
             throw new InvalidArgumentException("Log value is empty string",7);
         }
         
-        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
-
+        $referrer = $this->get_referrer();
         try {
             $db = $this->db_connect();
 
