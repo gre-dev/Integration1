@@ -5,7 +5,6 @@ require_once __DIR__ . '/Exceptions/DBException.php';
 require_once __DIR__ . '/Exceptions/SessionException.php';
 require_once __DIR__ . '/Traits/InputHandleTrait.php';
 
-require_once __DIR__ . '/vendor/autoload.php';
 
 class Account {
 
@@ -35,8 +34,7 @@ class Account {
     private $api_keys_table;
     private $accounts_table;
     private $requests_info_table;
-           
-
+    
     /**
      * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
      **/
@@ -57,7 +55,7 @@ class Account {
 
     public function __construct() {
         
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/..");
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
         $dotenv->required(['DB_ACCOUNTS_TABLE', 'DB_API_KEYS_TABLE','DB_REQUESTS_INFO_TABLE']);
