@@ -373,7 +373,7 @@ class API {
             $startdate = $subscription->date;
             $this->db_close_connection();
 
-            return time() - ($startdate + $period); 
+            return $startdate + $period; 
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
