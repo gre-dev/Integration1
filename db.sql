@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 10, 2022 at 01:29 PM
+-- Generation Time: Nov 12, 2022 at 02:25 PM
 -- Server version: 8.0.23-3+b1
 -- PHP Version: 8.1.3
 
@@ -74,6 +74,20 @@ INSERT INTO `api_keys_plans` (`id`, `name`, `max_requests`, `period`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `api_key_subscriptions`
+--
+
+CREATE TABLE `api_key_subscriptions` (
+  `id` int NOT NULL,
+  `api_key_id` int NOT NULL,
+  `plan_id` int NOT NULL,
+  `subscription_period` int NOT NULL,
+  `date` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `requests_info`
 --
 
@@ -110,6 +124,12 @@ ALTER TABLE `api_keys_plans`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `api_key_subscriptions`
+--
+ALTER TABLE `api_key_subscriptions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `requests_info`
 --
 ALTER TABLE `requests_info`
@@ -135,6 +155,12 @@ ALTER TABLE `api_keys`
 -- AUTO_INCREMENT for table `api_keys_plans`
 --
 ALTER TABLE `api_keys_plans`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `api_key_subscriptions`
+--
+ALTER TABLE `api_key_subscriptions`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
