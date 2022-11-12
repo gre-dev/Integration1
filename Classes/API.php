@@ -19,16 +19,16 @@ class API {
 
     /**
      * @var string $api_keys_table the api keys table name.
-     *
      * @var string $accounts_table the accounts table name.
-     *
      * @var string $plans_table the plan table name.
+     * @var string $api_subscriptions_table api subscriptions table name.
      **/
 
     private $api_keys_table;
     private $accounts_table;
     private $plans_table;
     private $requests_info_table;
+    private $api_subscriptions_table;
 
     /**
      * @var PDO $db PDO database object, don't use it directly inside
@@ -48,7 +48,8 @@ class API {
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
         $dotenv->load();
         $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
-        $dotenv->required(['DB_API_KEYS_TABLE', 'DB_ACCOUNTS_TABLE','DB_PLANS_TABLE','DB_REQUESTS_INFO_TABLE']);
+        $dotenv->required(['DB_ACCOUNTS_TABLE']);
+        $dotenv->required(['DB_API_KEYS_TABLE','DB_PLANS_TABLE','DB_REQUESTS_INFO_TABLE']);
 
         $this->dbhost = $_ENV['DB_HOST'];
         $this->dbname = $_ENV['DB_NAME'];
@@ -59,6 +60,7 @@ class API {
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->plans_table = $_ENV['DB_PLANS_TABLE'];
         $this->requests_info_table = $_ENV['DB_REQUESTS_INFO_TABLE'];
+        $this->api_subscriptions_table = $_ENV['DB_API_SUBSCRIPTIONS_TABLE'];
         
     }
     /**
@@ -344,7 +346,7 @@ class API {
     /**
      * gets the remaining time before considering the given api key expired.x
      *
-     * @return int indicated the remaining time untile account plan expirity (as UNIX timestamp) .
+     * @return int indicated the remaining time until account plan expirity, >0 if already expired (as UNIX timestamp) .
      * @param int $keyid represents key id to get expirity time for.
      * @throws DBException if db connection problem encoutered a problem or 
      *                     getting expirity process failed.
@@ -352,42 +354,30 @@ class API {
         
     public function get_account_plan_expiry($keyid) { 
 
+        $this->ensure_apikey_exists($keyid);
+        
         try {
             $db = $this->db_connect();
+            $subscriptionStmt = $db->prepare("SELECT subscription_period,date FROM {$this->api_subscriptions_table} WHERE api_key_id = ? ORDER BY date DESC LIMIT 1"); // the latest subscription
+            $subscriptionStmt->execute(array($keyid));
             
-            $keyStmt = $db->prepare("SELECT date,plan_id FROM {$this->api_keys_table} WHERE id = ? LIMIT 1");
-            $keyStmt->execute(array($keyid));
-            $key = $keyStmt->fetch(PDO::FETCH_OBJ);
-
-            if (!$key)
-            {
-                
-                $exception = new DBException(DBException::DB_ERR_SELECT);
-                throw $exception;
+            $subscription = $subscriptionStmt->fetch(PDO::FETCH_OBJ);
             
-            }
-
-            $startdate = $key->date;
-            
-            $planPeroidStmt = $db->prepare("SELECT period FROM {$this->plans_table} WHERE id = ? LIMIT 1");
-            $planPeroidStmt->execute(array($key->plan_id));
-            $planperiod = $planPeroidStmt->fetchColumn();
-            
-            if ($planperiod === false)
+            if ($subscription === false)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 throw $exception;
-            
             }
-            
+
+            $period = $subscription->subscription_period;
+            $startdate = $subscription->date;
             $this->db_close_connection();
-            return $planperiod + $startdate; 
 
+            return time() - ($startdate + $period); 
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
             throw $exception;
-           
         }
 
         $this->db_close_connection();
