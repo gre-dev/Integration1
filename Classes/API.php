@@ -344,9 +344,9 @@ class API {
 
 
     /**
-     * gets the remaining time before considering the given api key expired.x
+     * gets the api key expiry date.
      *
-     * @return int indicated the remaining time until account plan expirity, >0 if already expired (as UNIX timestamp) .
+     * @return int indicates the expiry date (as a UNIX timestamp) .
      * @param int $keyid represents key id to get expirity time for.
      * @throws DBException if db connection problem encoutered a problem or 
      *                     getting expirity process failed.
