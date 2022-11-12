@@ -130,13 +130,14 @@ class API {
 
             }
           
-            $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date) VALUES (:accountid, :apikey, :requests, :planid, :date)");
+            $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date, status) VALUES (:accountid, :apikey, :requests, :planid, :date, :status)");
             $data = [
                 'accountid' => $accountid,
                 'apikey' => $this->generate_apikey_string(), 
                 'requests' => 0, // represent api key current requests, not the plan limit
                 'planid' => $planid,
-                'date' => time()
+                'date' => time(),
+                'status' => 'active'
                
             ];
             $result = $stmt->execute($data);
@@ -358,8 +359,14 @@ class API {
         
         try {
             $db = $this->db_connect();
-            $subscriptionStmt = $db->prepare("SELECT subscription_period,date FROM {$this->api_subscriptions_table} WHERE api_key_id = ? ORDER BY date DESC LIMIT 1"); // the latest subscription
-            $subscriptionStmt->execute(array($keyid));
+            $subscriptionStmt = $db->prepare("SELECT {$this->api_subscriptions_table}.subscription_period, {$this->api_subscriptions_table}.date FROM {$this->api_subscriptions_table}, {$this->api_keys_table} WHERE api_key_id = :keyid AND {$this->api_keys_table}.status = :status ORDER BY {$this->api_subscriptions_table}.date DESC LIMIT 1"); // the latest subscription
+
+            $data = array(
+                'keyid' => $keyid,
+                'status' => 'active'
+            );
+                
+            $subscriptionStmt->execute($data);
             
             $subscription = $subscriptionStmt->fetch(PDO::FETCH_OBJ);
             

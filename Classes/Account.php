@@ -166,7 +166,6 @@ class Account {
         return false;
         
     } 
-
     /** updates session data with new email and password.
      *
      *@param string $email represents the new email.
@@ -239,7 +238,7 @@ class Account {
   
             $db = $this->db_connect();
 
-            $stmt = $db->prepare("SELECT * FROM {$this->accounts_table} WHERE email = :email AND password = :pass LIMIT 1");
+            $stmt = $db->prepare("SELECT * FROM {$this->accounts_table} WHERE email = :email AND password = :pass AND status = 'active' LIMIT 1");
                 
             $stmt->bindValue(':email', $email);
             $stmt->bindValue(':pass' , $pass);
@@ -305,7 +304,7 @@ class Account {
             
             $db = $this->db_connect();
 
-            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time) VALUES (:username, :email, :pass, :time)");
+            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time, status) VALUES (:username, :email, :pass, :time, :status)");
 
             if ($is_hashed === false) {
                 $hashoptions = [
@@ -319,7 +318,8 @@ class Account {
                 'username' => $username,
                 'email'    => $email,
                 'pass'     => $password,
-                'time'    => time()
+                'time'    => time(),
+                'status'  => 'active'
                 
             ];
             
@@ -340,7 +340,6 @@ class Account {
             return $accountId;
         }
         catch (PDOException $e) {
-
             $exception = new DBException(DBException::DB_ERR_INSERT);
             throw $exception;
         }
