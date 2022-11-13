@@ -213,7 +213,7 @@ class API {
      *                     or update statment failed.
      **/
 
-    public function regenerate_key($keyid) { 
+    public function regenerate_key(int $keyid) { 
         $key = $this->generate_apikey_string();
         
         try {
@@ -301,7 +301,7 @@ class API {
      *                     getting name process failed.
      **/
 
-    public function get_plan_name($keyid) {
+    public function get_plan_name(int $keyid) {
         try {
             $db = $this->db_connect();
             $keyStmt = $db->prepare("SELECT COUNT(id) from {$this->api_keys_table} where id = ?");
@@ -350,7 +350,7 @@ class API {
      *                     getting expirity process failed.
      **/
         
-    public function get_account_plan_expiry($keyid) { 
+    public function get_account_plan_expiry(int $keyid) { 
 
         $this->ensure_apikey_exists($keyid);
         
@@ -408,7 +408,7 @@ class API {
      *                     getting required info process from db has failed.
      **/
     
-    public function get_remaining_quotas($keyid)
+    public function get_remaining_quotas(int $keyid)
     {
         try {
             $db = $this->db_connect();

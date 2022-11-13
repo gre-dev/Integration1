@@ -426,7 +426,7 @@ class Account {
      *                     failed.
      **/
 
-    public function generate_password_token($id) {
+    public function generate_password_token(int $id) {
         // generate it and store in db
 
         $random = openssl_random_pseudo_bytes(12); // this will make 33-char length string with hex
