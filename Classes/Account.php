@@ -21,7 +21,7 @@ class Account {
     private $dbname;
     private $dbuser;
     private $dbpass;
-    
+
     /**
      * @var string $api_keys_table the api keys table name.
      * @var string $accounts_table the accounts table name.
@@ -330,7 +330,13 @@ class Account {
             }
                 
             $accountId = $db->lastInsertId();
-            
+
+            if ($accountId === false) {
+                $exception = new DBException(DBException::DB_ERR_INSERT);
+                $exception->set_insert_data("Error while adding a new account");
+                throw $exception;
+            }
+
             $api = new API();
             $keyid = $api->create_new_key($accountId, $this->PLAN_FREE_ID); // maybe change it after we decides about plan tables
 

@@ -146,6 +146,11 @@ class API {
 
             $keyid = $db->lastInsertId();
             
+            if ($keyid === false) {
+                $exception = new DBException(DBException::DB_ERR_INSERT);
+                throw $exception;             
+            }
+            
             $this->regenerate_key($keyid);
             
             return $keyid;
@@ -153,8 +158,6 @@ class API {
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_INSERT,$e);
             throw $exception;             
-
-            
         }
         
         $this->db_close_connection();        
