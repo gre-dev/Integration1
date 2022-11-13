@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 12, 2022 at 03:48 PM
+-- Generation Time: Nov 13, 2022 at 12:28 PM
 -- Server version: 8.0.23-3+b1
 -- PHP Version: 8.1.3
 
@@ -34,7 +34,7 @@ CREATE TABLE `accounts` (
   `password` text NOT NULL,
   `reset_pass_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `time` int NOT NULL,
-  `status` text NOT NULL
+  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -50,7 +50,7 @@ CREATE TABLE `api_keys` (
   `api_key` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `requests` int NOT NULL,
   `date` int NOT NULL,
-  `status` text NOT NULL
+  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
