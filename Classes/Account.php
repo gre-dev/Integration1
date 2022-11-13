@@ -12,13 +12,9 @@ class Account {
 
     /**
      * @var string $dbhost mysql db host name or ip to use when quering data.
-     *
      * @var string $dbname mysql db name to get data from.
-     *
      * @var string $dbuser mysql db user to use.
-     *
      * @var string $dbpass mysql db password to use
-     *
      **/
 
     private $dbhost;
@@ -29,6 +25,7 @@ class Account {
     /**
      * @var string $api_keys_table the api keys table name.
      * @var string $accounts_table the accounts table name.
+     * @var string $requests_info_table the requests into table name.
      **/
 
     private $api_keys_table;
@@ -38,8 +35,8 @@ class Account {
     /**
      * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
      **/
+    
     private $PLAN_FREE_ID;
-
     
     /**
      * @var PDO $db PDO database object, don't use it directly inside
@@ -49,8 +46,9 @@ class Account {
      **/
     
     private $db;
+    
     /**
-     * @todo add phpdotenv exception documentation.
+     * @throws RuntimeException when one of env variables is missing.
      **/
 
     public function __construct() {
@@ -64,6 +62,7 @@ class Account {
         $this->dbname = $_ENV['DB_NAME'];
         $this->dbuser = $_ENV['DB_USER'];
         $this->dbpass = $_ENV['DB_PASSWORD'];
+
         $this->api_keys_table = $_ENV['DB_API_KEYS_TABLE'];
         $this->accounts_table = $_ENV['DB_ACCOUNTS_TABLE'];
         $this->plans_table = $_ENV['DB_ACCOUNTS_TABLE'];
@@ -115,7 +114,9 @@ class Account {
      *                          to prevent input related security attacks.
      *
      *                          
-     * @uses $_SESSION['login_email'] and $_SESSION['login_password'] to read login data.
+     * @uses $_SESSION['login_email'] to read login email.
+     * @uses $_SESSION['login_password'] to read login password.
+     *
      **/
 
     public function check_session() { //use session_start() outside this function
@@ -142,7 +143,6 @@ class Account {
             try {
                 $db = $this->db_connect();
 
-                // note that login_password in session is a hash , notice
                 $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE email = :email AND password = :pass LIMIT 1");
 
                 $stmt->bindValue(':email',$email);
@@ -174,13 +174,11 @@ class Account {
      *                       the passed password doesn't need to be 
      *                       hashed internally or not.
      * @throws InvalidArgumentException if the provided email is not a valid email.
+     * @uses $_SESSION to write session data.
      **/
 
     public function update_session_data($email, $pass, $is_hashed = true) //use session_start() outside this function
     {
-
-        
-        // maybe checking account password is strong, notice
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException("Email passed doesn't look like an email string",3);
         }
@@ -554,6 +552,10 @@ class Account {
     }
     /**
      * logout , erases login data from session
+     *
+     * @uses $_SESSION['login_email'] .
+     * @uses $_SESSION['login_password'] .
+     *
      **/
     
     public function logout() { //session_start() outside this function

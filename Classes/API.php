@@ -1,15 +1,12 @@
 <?php
 
-class API {   
+class API {
+    
     /**
      * @var string $dbhost mysql db host name or ip to use when quering data.
-     *
      * @var string $dbname mysql db name to get data from.
-     *
      * @var string $dbuser mysql db user to use.
-     *
      * @var string $dbpass mysql db password to use
-     *
      **/
 
     private $dbhost;
@@ -21,6 +18,7 @@ class API {
      * @var string $api_keys_table the api keys table name.
      * @var string $accounts_table the accounts table name.
      * @var string $plans_table the plan table name.
+     * @var string $requests_info_table the requests into table name.
      * @var string $api_subscriptions_table api subscriptions table name.
      **/
 
@@ -40,7 +38,7 @@ class API {
     private $db;
     
     /**
-     * @todo add phpdotenv exception documentation.
+     * @throws RuntimeException when one of env variables is missing.
      **/
 
     public function __construct() {
@@ -99,14 +97,13 @@ class API {
      *
      * @return int return the new key id (as int).
      * @param $accountid represents account id to add api key for
-     * @param $accountid represents plan id to attach api key to
+     * @param $planid represents plan id to attach api key to
      * @throws DBException if db has problem with connection or
      *                     select query cannot be executed.
      **/
 
     public function create_new_key($accountid,$planid)
     {
-        // notice about plans schema, notify it        
         try {
             
             $db = $this->db_connect();
@@ -393,7 +390,7 @@ class API {
 
     /**
      * gets the connection referrer.
-     *
+     * @uses $_SERVER['HTTP_REFERER'] .
      * @return string represents referrer (as ip string or host name). 
      **/
 
