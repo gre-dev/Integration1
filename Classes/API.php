@@ -102,7 +102,7 @@ class API {
      *                     select query cannot be executed.
      **/
 
-    public function create_new_key($accountid,$planid)
+    public function create_new_key(int $accountid,int $planid)
     {
         try {
             
