@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../error_codes.php';
 
 class API {
     
@@ -40,7 +41,7 @@ class API {
     /**
      * @throws RuntimeException when one of env variables is missing.
      **/
-
+    
     public function __construct() {
 
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
@@ -126,7 +127,14 @@ class API {
                 throw $exception;             
 
             }
-          
+        }
+
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            throw $exception;             
+        }
+
+        try {
             $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date, status) VALUES (:accountid, :apikey, :requests, :planid, :date, :status)");
             $data = [
                 'accountid' => $accountid,
@@ -270,7 +278,14 @@ class API {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 throw $exception;             
             }
-            
+
+        }
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            throw $exception;             
+        }
+        
+        try {
             $stmt = $db->prepare("UPDATE {$this->api_keys_table} SET plan_id = :planid where id = :id");
 
             $data  = [
@@ -315,12 +330,11 @@ class API {
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 throw $exception;             
-                
             }
             
             $cmpStmt = $db->prepare("SELECT {$this->plans_table}.name FROM {$this->api_keys_table}, {$this->plans_table} WHERE {$this->api_keys_table}.id = ? AND {$this->plans_table}.id = {$this->api_keys_table}.plan_id LIMIT 1");
             
-            $cmpStmt->execute(array($keyid));
+            $result = $cmpStmt->execute(array($keyid));
 
             if (!$result)
             {
@@ -334,8 +348,7 @@ class API {
             return $name;
         }
         catch (PDOException $e) {
-            $exception = new DBException(DBException::DB_ERR_CONN_WRONG_DATA,$e);
-            $exception->set_connection_wrong_data("Error while connecting to db, please check if server login credentials is correct.");
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
             throw $exception;             
         }
         
@@ -366,8 +379,13 @@ class API {
                 'status' => 'active'
             );
                 
-            $subscriptionStmt->execute($data);
+            $result = $subscriptionStmt->execute($data);
             
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                throw $exception;
+            }
+
             $subscription = $subscriptionStmt->fetch(PDO::FETCH_OBJ);
             
             if ($subscription === false)
@@ -415,11 +433,15 @@ class API {
     {
         try {
             $db = $this->db_connect();
-            
             $keyStmt = $db->prepare("SELECT requests,plan_id FROM {$this->api_keys_table} WHERE id = ? LIMIT 1"); 
-            $keyStmt->execute(array($keyid));
-            $key = $keyStmt->fetch(PDO::FETCH_OBJ);
+            $result = $keyStmt->execute(array($keyid));
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                throw $exception;
+            }
 
+            $key = $keyStmt->fetch(PDO::FETCH_OBJ);
             if (!$key)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
@@ -438,10 +460,15 @@ class API {
 
         try {
             $planStmt = $db->prepare("SELECT max_requests FROM {$this->plans_table} WHERE id = ?");
-            $planStmt->execute(array($planid));
-            $planrequests = $planStmt->fetchColumn();
+            $result = $planStmt->execute(array($planid));
 
-            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                $this->db_close_connection();
+                throw $exception;
+            }                
+
+            $planrequests = $planStmt->fetchColumn();
             if ($planrequests === false)
             {
 
@@ -480,13 +507,20 @@ class API {
             
             $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->api_keys_table} WHERE id = ?");
             
-            $stmt->execute(array($keyid));
+            $result = $stmt->execute(array($keyid));
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                $this->db_close_connection();
+                throw $exception;
+            }                
+
             $rows = $stmt->fetchColumn();
                 
-        if ($rows === 1) {
-            $this->db_close_connection();
-            return true;
-        }
+            if ($rows === 1) {
+                $this->db_close_connection();
+                return true;
+            }
         }
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT,$e);
@@ -495,7 +529,7 @@ class API {
         }
 
         $this->db_close_connection();
-        throw new Exception('No such Api Key',14);
+        throw new Exception('No such Api Key', NO_SUCH_API_KEY);
     }
     
     /**
@@ -518,11 +552,11 @@ class API {
         $this->ensure_apikey_exists($api_key_id);
         
         if (empty($type)) {
-            throw new InvalidArgumentException("Log type is empty",6);
+            throw new InvalidArgumentException("Log type is empty",ARG_LOG_TYPE_EMPTY);
         }
         
         if ($value !== null && empty($value)) {
-            throw new InvalidArgumentException("Log value is empty string",7);
+            throw new InvalidArgumentException("Log value is empty string",ARG_LOG_VALUE_EMPTY);
         }
         
         $referrer = $this->get_referrer();
@@ -552,7 +586,7 @@ class API {
         
         catch (PDOException $e) {
 
-            $exception = new DBException(DBException::DB_ERR_INSERT);
+            $exception = new DBException(DBException::DB_ERR_INSERT,$e);
             throw $exception;
         }
         

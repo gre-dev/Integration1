@@ -4,10 +4,11 @@ require_once __DIR__ . '/API.php';
 require_once __DIR__ . '/Exceptions/DBException.php';
 require_once __DIR__ . '/Exceptions/SessionException.php';
 require_once __DIR__ . '/Traits/InputHandleTrait.php';
-
+    
+require_once __DIR__ . '/../error_codes.php';
 
 class Account {
-
+    
     use InputHandleTrait;
 
     /**
@@ -33,7 +34,7 @@ class Account {
     private $requests_info_table;
     
     /**
-     * @var string $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
+     * @var int $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
      **/
     
     private $PLAN_FREE_ID;
@@ -148,7 +149,13 @@ class Account {
                 $stmt->bindValue(':email',$email);
                 $stmt->bindValue(':pass',$password);
 
-                $stmt->execute();
+                $result = $stmt->execute();
+                
+                if ($result === false) {
+                    $exception = new DBException(DBException::DB_ERR_SELECT);
+                    throw $exception;
+                }
+
                 $rows = $stmt->fetchColumn();
                 
                 if ($rows === 1) {
@@ -178,9 +185,10 @@ class Account {
      **/
 
     public function update_session_data($email, $pass, $is_hashed = true) //use session_start() outside this function
+    
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string",3);
+            throw new InvalidArgumentException("Email passed doesn't look like an email string", ARG_EMAIL_INVALID);
         }
         if ($is_hashed === false) {
             $hashoptions = [
@@ -218,11 +226,11 @@ class Account {
     {
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't look like an email string",3);
+            throw new InvalidArgumentException("Email passed doesn't look like an email string",ARG_EMAIL_INVALID);
         }
         
-        if ( empty($pass)) {
-            throw new InvalidArgumentException("Password is empty string",4);
+        if (empty($pass)) {
+            throw new InvalidArgumentException("Password is empty string", ARG_PASSWORD_EMPTY);
         }
 
         if ($is_hashed === false) {
@@ -245,7 +253,7 @@ class Account {
 
             if (!$success) {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
-                $exception->set_select_data("Error while performing login credentials.");
+                $exception->set_select_data("Error while performing login credentials query.");
                 throw $exception;
             }
 
@@ -258,8 +266,8 @@ class Account {
             
         }
         catch (PDOException $e) {
-            $exception = new DBException(DBException::DB_ERR_SELECT);
-            $exception->set_select_data("while performing login credentials.");
+            $exception = new DBException(DBException::DB_ERR_SELECT, $e);
+            $exception->set_select_data("while performing login credentials query.");
             throw $exception;
         }
 
@@ -289,15 +297,15 @@ class Account {
         
         try {
             if (empty($password)) {
-                throw new InvalidArgumentException("Password is empty",4);
+                throw new InvalidArgumentException("Password is empty",ARG_PASSWORD_EMPTY);
             }
             
             if (empty($username)) {
-                throw new InvalidArgumentException("User name is empty",5);
+                throw new InvalidArgumentException("User name is empty",ARG_USERNAME_EMPTY);
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new InvalidArgumentException("Email arg doesn't look like an email string",3);
+                throw new InvalidArgumentException("Email arg doesn't look like an email string",ARG_EMAIL_INVALID);
             }
             
             $db = $this->db_connect();
@@ -344,7 +352,7 @@ class Account {
             return $accountId;
         }
         catch (PDOException $e) {
-            $exception = new DBException(DBException::DB_ERR_INSERT);
+            $exception = new DBException(DBException::DB_ERR_INSERT, $e);
             throw $exception;
         }
         $this->db_close_connection();
@@ -363,7 +371,7 @@ class Account {
     public function is_email_avaliable($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Email passed doesn't looks like sanitized email",3);
+            throw new InvalidArgumentException("Email passed doesn't looks like sanitized email",ARG_EMAIL_INVALID);
         }
         
         try {
@@ -426,7 +434,7 @@ class Account {
      * generates a new password reset token, and store it in db.
      *
      * @return string the generated reset token string.
-     * @param string $id the account id to generate password token for.
+     * @param int $id the account id to generate password token for.
      * @throws DBException if the db connection encountered a problem or
      *                     the generate password token db process has
      *                     failed.
@@ -458,12 +466,12 @@ class Account {
     
             if (!$result)
             {
-                $exception = new DBException (DBException::DB_ERR_INSERT);
+                $exception = new DBException (DBException::DB_ERR_UPDATE);
                 throw $exception;
             }
         }
         catch (PDOException $e) {   
-            $exception = new DBException (DBException::DB_ERR_INSERT,$e);
+            $exception = new DBException (DBException::DB_ERR_UPDATE,$e);
             throw $exception;
         }
         
@@ -489,33 +497,37 @@ class Account {
     public function update_password($email,$password, $is_hashed = true) {
 
         
-        if (empty($email)) {
-            throw new InvalidArgumentException ('Email is empty',3);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException ('Email is invalid',ARG_EMAIL_INVALID);
         }
         
         if (empty($password)) {
-            throw new InvalidArgumentException ('Password is empty',4);
+            throw new InvalidArgumentException ('Password is empty',ARG_PASSWORD_EMPTY);
         }
         
         try {
             
             $db = $this->db_connect();
-    
             $stmt = $db->prepare("SELECT id FROM {$this->accounts_table} WHERE email = ? LIMIT 1");
-            $stmt->execute(array($email));
-
+            $result = $stmt->execute(array($email));
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                throw $exception;
+            }
+            
             $accountId = $stmt->fetchColumn();
         
             if (!$accountId)
             {
-                $exception = new DBException(DBException::DB_ERR_UPDATE);
+                $exception = new DBException(DBException::DB_ERR_SELECT);
                 $exception->set_update_data("Error while updating password for an account");
                 throw $exception;
             }
 
         }
         catch (PDOException $e) {
-            $exception = new DBException(DBException::DB_ERR_UPDATE,$e);
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
             $exception->set_update_data("Error while updating password for an account");
             throw $exception;
         }
@@ -549,7 +561,8 @@ class Account {
             }
             $this->update_session_data($email, $passhash);
 
-        }        catch (PDOException $e) {
+        }
+        catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_UPDATE, $e);
             throw $exception;
         }
