@@ -1,0 +1,40 @@
+@font-face { font-family: 'Almarai-Bold'; 
+    src: url('./../fonts/Almarai/Almarai-Bold.ttf'); } 
+    @font-face { font-family: 'Almarai-Regular'; 
+        src: url('./../fonts/Almarai/Almarai-Regular.ttf'); } 
+        @font-face { font-family: 'Almarai-Light'; 
+            src: url('./../fonts/Almarai/Almarai-Light.ttf'); } 
+body {
+    direction: rtl;
+    font-family: 'Almarai-Regular';
+}
+h1,h2,h3{
+    font-family: 'Almarai-Bold'; 
+}
+@media (min-width: 768px) {
+.navbar-header,
+.navbar-nav {
+    float: right;
+}
+.navbar-right {
+    float: left !important;
+}
+.navbar-nav>li {
+    float: right;
+}
+}
+@media (min-width: 992px){
+.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+ float: right;
+}
+}
+
+@media (max-width: 768px) {
+    .navbar-toggle {
+        float: left 
+
+    }
+    .navbar-brand {
+        float: right 
+    }
+}
