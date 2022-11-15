@@ -310,7 +310,7 @@ class Account {
             
             $db = $this->db_connect();
 
-            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time, status) VALUES (:username, :email, :pass, :time, :status)");
+            $stmt = $db->prepare("INSERT INTO {$this->accounts_table} (username,email, password, time) VALUES (:username, :email, :pass, :time)");
 
             if ($is_hashed === false) {
                 $hashoptions = [
@@ -324,9 +324,7 @@ class Account {
                 'username' => $username,
                 'email'    => $email,
                 'pass'     => $password,
-                'time'    => time(),
-                'status'  => 'active'
-                
+                'time'    => time(),               
             ];
             
             $result = $stmt->execute($data);

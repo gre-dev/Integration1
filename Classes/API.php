@@ -135,14 +135,13 @@ class API {
         }
 
         try {
-            $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date, status) VALUES (:accountid, :apikey, :requests, :planid, :date, :status)");
+            $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date) VALUES (:accountid, :apikey, :requests, :planid, :date)");
             $data = [
                 'accountid' => $accountid,
                 'apikey' => $this->generate_apikey_string(), 
                 'requests' => 0, // represent api key current requests, not the plan limit
                 'planid' => $planid,
                 'date' => time(),
-                'status' => 'active'
                
             ];
             $result = $stmt->execute($data);
