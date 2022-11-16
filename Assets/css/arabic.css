@@ -11,6 +11,71 @@ body {
 h1,h2,h3{
     font-family: 'Almarai-Bold'; 
 }
+
+.Sidebar {
+    right: 0;
+}
+    .Sidebar .SidebarBody > section ul > li > a.HasChild:after {
+        left: 10px
+    }
+.accordion .card-header button:before {
+    left: 18px;
+}
+.CollapseSidebar .Sidebar .SidebarBody > section ul li.HasChild-list ul li a, .CollapseSidebar .Sidebar .SidebarBody > section ul li.HasChild-list a, .CollapseSidebar .Sidebar .SidebarBody > section ul > li > a {
+    padding: 10px;
+}
+
+.SidebarContainer {
+    left: -130%;
+}
+
+    .SidebarContainer .OverLay {
+        left: -130%;
+        transition: all .5s;
+    }
+
+    .SidebarContainer.active .OverLay {
+        left: 0;
+        transition: all .5s;
+    }
+
+    .SidebarContainer .SidebarContent {
+        left: -130%;
+        transition: all .5s;
+    }
+
+    .SidebarContainer.active .SidebarContent {
+        left: 0;
+        transition: all .5s;
+    }
+
+    .SidebarContainer .SidebarContent .SidebarBody .rowItemcart .RemoveItem {
+        left: 10px;
+    }
+    @media (min-width: 992px) {
+        .TopHeader,
+        body.Dashboard {
+            margin-right: 280px;
+        }
+
+            body.CollapseSidebar,
+            .CollapseSidebar .TopHeader {
+                margin-right: 70px;
+            }
+        }
+    @media(max-width: 991px) {
+
+        .Sidebar {
+            right: -100%
+        }
+        .showSidebar .Sidebar {
+            right: 0;
+        }
+        .TopHeader {
+            margin-right: 0;
+            width: 100%;
+        }
+    }
 @media (min-width: 768px) {
 .navbar-header,
 .navbar-nav {
