@@ -172,19 +172,73 @@ class Account {
         $this->db_close_connection();
         return false;
         
+    }
+    
+    /** checks if user login token is correct;
+     *
+     *@param int $id represents account id to check token for.
+     * @throws SessionException if didn't found login token in $_SESSION, or it's empty string.
+     *
+     * @uses $_SESSION['login_token'] to read current token.
+     **/
+
+    public function check_user_token(int $id) { //use session_start() outside this function
+        
+        if (!isset($_SESSION['login_token'])) {
+            throw new SessionException(SessionException::ERR_USER_TOKEN_NOT_FOUND);
+        }
+        $token = $_SESSION['login_token'];
+        $token = $this->revert_filtered($token);
+        
+        if (empty($token)) {
+            throw new SessionException(SessionException::ERR_USER_TOKEN_NOT_FOUND);
+        }
+        $token = $this->filter_input($token);
+        
+        try {
+            
+            $db = $this->db_connect();
+            $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE id = :id AND user_token = :user_token LIMIT 1");
+
+            $stmt->bindValue(':id',$id);
+            $stmt->bindValue(':user_token',$token);
+            $result = $stmt->execute();
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                throw $exception;
+            }
+            $rows = $stmt->fetchColumn();
+                
+            if ($rows === 1) {
+                $this->db_close_connection();
+                return true;
+            }
+        }
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data( "Error while checking user token in db");
+            throw $exception;
+        }
+        $this->db_close_connection();
+        return false;
     } 
+
     /** updates session data with new email and password.
      *
      *@param string $email represents the new email.
-     *@param string $pass represnts the new password, note the password will be stored hashed in the session variable.
+     *@param string $pass represents the new password, note the password will be stored hashed in the session variable.
+     *@param string $token represents login token.
      *@param bool $is_hashed optional argument indicated whether
      *                       the passed password doesn't need to be 
      *                       hashed internally or not.
+     *
+     *
      * @throws InvalidArgumentException if the provided email is not a valid email.
      * @uses $_SESSION to write session data.
      **/
 
-    public function update_session_data($email, $pass, $is_hashed = true) //use session_start() outside this function
+    public function update_session_data($email, $pass, $token, $is_hashed = true) //use session_start() outside this function
     
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -200,6 +254,8 @@ class Account {
         session_start();
         $_SESSION['login_email'] = $this->filter_input($email);
         $_SESSION['login_password'] = $this->filter_input($pass);
+        $_SESSION['login_token'] = $this->filter_input($token);
+        
     }
 
     
@@ -245,26 +301,26 @@ class Account {
             $db = $this->db_connect();
 
             $stmt = $db->prepare("SELECT * FROM {$this->accounts_table} WHERE email = :email AND password = :pass AND status = 'active' LIMIT 1");
-                
+            
             $stmt->bindValue(':email', $email);
             $stmt->bindValue(':pass' , $pass);
-                
+            
             $success = $stmt->execute();
-
+            
             if (!$success) {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 $exception->set_select_data("Error while performing login credentials query.");
                 throw $exception;
             }
-
+            
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+            
             if ($user) {
                 $this->db_close_connection();
                 return $user ;
             }
-            
         }
+        
         catch (PDOException $e) {
             $exception = new DBException(DBException::DB_ERR_SELECT, $e);
             $exception->set_select_data("while performing login credentials query.");
@@ -319,12 +375,13 @@ class Account {
                 
                 $password = password_hash($password, PASSWORD_BCRYPT, $hashoptions);
             }
+
             
             $data = [
                 'username' => $username,
                 'email'    => $email,
                 'pass'     => $password,
-                'time'    => time(),               
+                'time'    => time()                
             ];
             
             $result = $stmt->execute($data);
@@ -342,6 +399,7 @@ class Account {
                 $exception->set_insert_data("Error while adding a new account");
                 throw $exception;
             }
+            $token = $this->update_account_token($accountId);
 
             $api = new API();
             $keyid = $api->create_new_key($accountId, $this->PLAN_FREE_ID); // maybe change it after we decides about plan tables
@@ -354,7 +412,7 @@ class Account {
             throw $exception;
         }
         $this->db_close_connection();
-        $this->update_session_data($email, $password); 
+        $this->update_session_data($email, $password, $token); 
     }
 
     
@@ -557,7 +615,7 @@ class Account {
                 $exception = new DBException(DBException::DB_ERR_UPDATE);
                 throw $exception;
             }
-            $this->update_session_data($email, $passhash);
+            $this->update_session_data($email, $passhash, $token);
 
         }
         catch (PDOException $e) {
@@ -572,6 +630,8 @@ class Account {
      *
      * @uses $_SESSION['login_email'] .
      * @uses $_SESSION['login_password'] .
+     * @uses $_SESSION['login_password'] .
+     * @uses $_SESSION['login_token'] ,
      *
      **/
     
@@ -579,6 +639,147 @@ class Account {
         session_start();
         unset($_SESSION['login_email']);
         unset($_SESSION['login_password']);
+        unset($_SESSION['login_token']);
+    }
+
+    /**
+     * checks if the presented token in unique (isn't stored in db, for 
+     * any user yet).
+     *
+     * @return false if it's in accounts table.
+     * @return true if it's not found, and you can use it safely.
+     *
+     * @param $token token to check.
+     *
+     * @throws DBException if db has problem with connection or
+     *                     the query cannot be executed.
+     *
+     **/
+    
+    private function is_user_token_unique($token) {
+        
+        try {
+            $db = $this->db_connect();
+            
+            $stmt = $db->prepare("SELECT COUNT(id) FROM {$this->accounts_table} WHERE user_token = ?");
+            
+            $result = $stmt->execute(array($token));
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                $this->db_close_connection();
+                throw $exception;
+            }                
+
+            $rows = $stmt->fetchColumn();
+
+            if ($rows === 0) {
+                $this->db_close_connection();
+                return true;
+            }
+        }
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data( "Error while ensuring is user token avaliable");
+            throw $exception;
+        }
+
+        $this->db_close_connection();
+        return false;
+    }
+
+    
+    /**
+     * updates account login token with a new generated one.
+     *
+     * @param int $id account id to generate for.
+     * @throws DBException if db has problem with connection or
+     *                     the query cannot be executed.
+     *
+     **/
+    
+    public function update_account_token(int $id) {
+        
+        do {
+            $random = openssl_random_pseudo_bytes(10);
+            $user_token =  md5($random);
+        }
+        
+        while (!$this->is_user_token_unique($user_token));
+        
+        try {
+            $db = $this->db_connect();
+    
+            $stmt = $db->prepare("UPDATE {$this->accounts_table} SET user_token = :token, last_token_update = :last_update where id = :accountid");
+
+            $data = array (
+                'token' => $user_token,
+                'accountid' => $id,
+                'last_update' => time()
+            );
+            
+            $result = $stmt->execute($data);
+    
+            if (!$result)
+            {
+                $exception = new DBException (DBException::DB_ERR_UPDATE);
+                throw $exception;
+            }
+        }
+        catch (PDOException $e) {   
+            $exception = new DBException (DBException::DB_ERR_UPDATE,$e);
+            throw $exception;
+        }
+        
+        $this->db_close_connection();
+        return $user_token;
+    }
+
+    /**
+     * checks if the token expired, depeding on accounts table last_token_update field. 
+     *
+     * @param int $id account id to check token for.
+     * @throws DBException if db has problem with connection or
+     *                     the query cannot be executed.
+     *
+     **/
+
+    public function is_token_expired(int $id) {
+        
+        try {
+            $db = $this->db_connect();
+            $stmt = $db->prepare("SELECT last_token_update FROM {$this->accounts_table} WHERE id = ? LIMIT 1");
+            
+            $result = $stmt->execute(array($id));
+            
+            if ($result === false) {
+                $exception = new DBException(DBException::DB_ERR_SELECT);
+                throw $exception;
+            }
+            
+            $last_update = $stmt->fetchColumn();
+            
+            if ($last_update === false || $last_update === null) {
+                $this->db_close_connection(); 
+                return true;
+            }
+        }
+        
+        catch (PDOException $e) {
+            $exception = new DBException(DBException::DB_ERR_SELECT,$e);
+            $exception->set_select_data( "Error while getting token update time");
+            throw $exception;
+        }
+        
+        $this->db_close_connection();
+        define('HOUR', 60 * 60 * 12);
+        
+        $expire_time = $last_update + 6 * HOUR;
+        if ($expire_time > time()) {
+            return false;
+        }
+        
+        return true;
     }
 }
 

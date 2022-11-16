@@ -12,7 +12,10 @@
 |------|----------------------------------------|
 | 1    | 'login_email' is missing in session    |
 | 2    | 'login_password' is missing in session |
+| 14   | 'login_token' is missing in session    |
 
+
+	
 
 
 ### `InvalidArgumentException`:
