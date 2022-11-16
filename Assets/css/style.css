@@ -7,6 +7,9 @@ body,html {
     background-color: #fafbfd;
     scroll-behavior: smooth;
 }
+body {
+    padding-top: 95px;
+}
 .btn.with-icon{
     text-align: start;
     padding: 7px 20px;
@@ -23,6 +26,13 @@ body,html {
     top: 15px;
 }
 /* ==================== header ================ */
+header.Header {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    z-index: 99;
+    top: 0;
+}
 .navbar {
     padding: 15px 0;
     margin-bottom: 8px;
@@ -91,7 +101,7 @@ body,html {
     color: var(--SecondColor)
 }
 .banner-job .banner-container .btn{
-    min-width: 110px;
+    min-width: 125px;
     border-radius: 25px;
     background-color: #fff;
     padding: 7px;
@@ -227,11 +237,11 @@ body,html {
     z-index: 9;
 }
 .section-services .text-container h3{
-    font-size: 33px;
+    font-size: 30px;
     margin-bottom: 20px;
    }
    .section-services .text-container p{
-    font-size: 17px;
+    font-size: 16px;
     line-height: 28px;
     width: 300px;
    }
@@ -376,5 +386,41 @@ body,html {
 }
 .navbar-nav {
     padding: 0;
+}
+.section-services {
+    display: block;
+}
+.section-services .img-container {
+    padding-inline-end: 15px !important;
+    padding-inline-start: 15px !important;
+    margin: auto;
+    width: 300px;
+}
+.section-services .text-container{
+    margin: auto;
+    width: 95%;
+    text-align: center;
+}
+.section-services .text-container p {
+    width: 95%;
+    margin: auto;
+}
+.section-services:nth-child(odd) .img-container::after {
+    left: 9px;
+}
+.section-services .img-container::before {
+    width: 44px;
+    height: 58px;
+    background-size: 37px 47px;
+    bottom: 0px;
+}
+.section-services:nth-child(odd) .img-container::before {
+    right: 28px;
+}
+.section-services:nth-child(even) .img-container::after {
+    right: -13px;
+}
+.navbar-nav>li>a.btn-light {
+    margin: 5px 0px;
 }
 }
