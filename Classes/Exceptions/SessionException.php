@@ -13,7 +13,7 @@ class SessionException extends Exception
 
     const ERR_EMAIL_NOT_FOUND = 1;
     const ERR_PASS_NOT_FOUND = 2;
-    const ERR_USER_TOKEN_NOT_FOUND = 14;
+    const ERR_USER_TOKEN_NOT_FOUND = 15;
 
 /**
  * @param int $code error code to set.
