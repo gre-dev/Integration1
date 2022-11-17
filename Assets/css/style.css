@@ -141,6 +141,9 @@ header.Header {
 }
 /* ==================== end banner-job ================ */
 /* ==================== section-services ================ */
+#services {
+    padding-top: 70px;
+}
 .section-services {
     display: flex;
     align-items: center;
@@ -246,9 +249,10 @@ header.Header {
     width: 300px;
    }
    /* ==================== End section-services ================ */
+     /* ==================== login ================ */
    .modal-header {
     border-bottom: 0;
-    padding: 15px 15px 10px;
+    padding: 25px 30px 10px;
    }
    .modal-header button.close {
     opacity: 1;
@@ -258,23 +262,60 @@ header.Header {
     opacity: 0.7;
    }
    .modal-header button.close img {
-    width: 24px;
+    width: 30px;
    }
    @media (min-width: 768px){
 .modal-dialog {
     width: 550px;
 }
+
+}
+@media (min-width: 480px){
+    .modal-dialog {
+        width: 400px;
+        margin: 10px auto;
+    }
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .container {
+        width: 100%;
+    }
+    .navbar .nav.navbar-nav {
+    margin-inline-start: 0px;
+    padding-inline-start: 5px;
+    }
+    .navbar-nav>li>a.btn-theme {
+        padding: 8px 15px;
+    }
+    .navbar>.container .navbar-brand img {
+        height: 28px;
+        position: relative;
+        top: 6px;
+    }
+    .section-services {
+    padding: 10px 35px;
+}
+.banner-job {
+    min-height: auto;
+}
+.section-services .text-container {
+    padding-inline-start: 60px;
+}
+    }
 .modal-dialog .modal-content {
     border-radius: 25px;
-}
+    border: none;
+    box-shadow: none;
 }
    .login-modal-body {
 
    }
-   .login-modal-body h3 {
+   .login-modal-body .title-login {
  text-align: center;
  color: var(--SecondColor);
  margin: 20px 0;
+ font-size: 24px;
+ font-family: 'Almarai-Bold';
 }
 .login-modal-body h6 {
     position: relative;
@@ -335,6 +376,7 @@ header.Header {
     font-family: 'Almarai-Bold';
     padding: 3px 10px;
     padding-inline-start: 30px;
+    color: var(--SecondColor);
 }
 .login-modal-body form .btn-theme{
     background-color: var(--mainColor);
@@ -362,6 +404,364 @@ header.Header {
     cursor: pointer;
 }
 
+  /* ==================== End login ================ */
+  /* ==================== sidebar ================ */
+.Sidebar {
+    background-color: #fff;
+    position: fixed;
+    width: 280px;
+    height: 100vh;
+    top: 0;
+    z-index: 999
+}
+
+.Sidebar .SidebarHeader {
+    text-align: center;
+    padding: 15px;
+    overflow: hidden;
+    border-bottom: 1px solid #f4f4f4;
+    height: 84px;
+}
+    .Sidebar .SidebarHeader img {
+        height: 28px;
+        margin-top: 15px;
+    }
+.CollapseSidebar .Sidebar .SidebarHeader img {
+    height: 7px;
+    margin-top: 25px;
+}
+        .Sidebar .SidebarHeader > a,
+        .Sidebar .SidebarHeader a:hover {
+            width: 100%;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600
+        }
+
+.Sidebar .SidebarBody {
+    height: calc(100vh - 55px);
+    overflow: auto;
+    padding-top: 20px;
+}
+
+.Sidebar .SidebarBody>section {
+    padding: 0px 10px;
+    color: #fff;
+  /*  border-bottom: 3px solid #252525*/
+}
+
+.Sidebar .SidebarBody>section:last-child {
+    border: none
+}
+
+.Sidebar .SidebarBody>section>label {
+    color: #aaa;
+    margin: 10px 0;
+    font-size: 15px
+}
+
+.Sidebar .SidebarBody>section ul {
+    margin-bottom: 0;
+    padding: 0 5px;
+}
+
+    .Sidebar .SidebarBody > section ul > li > a {
+        padding: 10px;
+        margin: 5px 0;
+        display: block;
+        cursor: pointer;
+        color: #000;
+        position: relative;
+        font-size: 13.5px;
+    }
+    .Sidebar .SidebarBody > section ul > li > a img {
+        height: 23px;
+    }
+    .Sidebar .SidebarBody > section ul li.HasChild-list ul li a {
+        padding: 10px 20px;
+    }
+.CollapseSidebar .Sidebar .SidebarBody > section ul li.HasChild-list ul li a,
+.CollapseSidebar .Sidebar .SidebarBody > section ul li.HasChild-list a,
+.CollapseSidebar .Sidebar .SidebarBody > section ul > li > a {
+    padding: 10px 0;
+}
+.Sidebar .SidebarBody > section ul li.HasChild-list ul li a.active,
+.Sidebar .SidebarBody > section ul > li > a:hover {
+    background-color: #97bdd224;
+}
+.Sidebar .SidebarBody > section ul > li > a:hover span,
+.Sidebar .SidebarBody > section ul > li > a:hover i {
+    color: #47a4ad;
+}
+        .Sidebar .SidebarBody > section ul > li > a.HasChild .badge {
+            margin-right: 20px
+        }
+
+        .Sidebar .SidebarBody > section ul > li > a.HasChild:after {
+            content: "\f104";
+            font-family: "Font Awesome 5 Free";
+            color: #000;
+            opacity: .75;
+            font-weight: 900;
+            position: absolute;
+        }
+            .Sidebar .SidebarBody > section ul > li > a.HasChild:hover:after {
+                color: #47a4ad;
+            }
+
+            .Sidebar .SidebarBody > section ul > li > a + ul {
+                display: none;
+                padding: 0px 0px
+            }
+
+        .Sidebar .SidebarBody > section ul > li > a > i {
+            width: 26px;
+            opacity: 1;
+            font-size: 14px;
+            position: relative;
+            top: 2px;
+        }
+
+        .Sidebar .SidebarBody > section ul > li > a > span {
+            opacity: 1;
+            font-size: 13px;
+            padding-inline-start: 10px;
+            font-weight: 500;
+            font-family: 'Almarai-bold';
+            color: #888;
+            position: relative;
+            top: 1px;
+        }
+        .Sidebar .SidebarBody > section ul > li > a.active > span {
+            color: var(--SecondColor)
+        }
+.Sidebar .SidebarBody>section ul>li.open {
+    box-shadow: 0 0 4px rgba(71, 87, 99, .5);
+    margin-bottom: 10px
+}
+
+.Sidebar .SidebarBody>section ul>li.open a.HasChild:after {
+    content: ""
+}
+
+.Sidebar .SidebarBody>section ul>li:hover>i,
+.Sidebar .SidebarBody>section ul>li:hover span,
+.Sidebar .SidebarBody>section ul>li:hover.HasChild:after {
+    opacity: 1
+}
+
+.CollapseSidebar .Sidebar {
+    width: 70px
+}
+
+.CollapseSidebar .Sidebar .SidebarHeader>a i {
+    font-size: 36px
+}
+
+.CollapseSidebar .Sidebar .SidebarHeader>a span {
+    display: none
+}
+
+.CollapseSidebar .Sidebar .SidebarBody {
+    overflow: visible
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section label,
+.CollapseSidebar .Sidebar .SidebarBody section ul>li>a>span,
+.CollapseSidebar .Sidebar .SidebarBody section ul>li>a>b,
+.CollapseSidebar .Sidebar .SidebarBody section ul>li>a::after,
+.CollapseSidebar .Sidebar .SidebarBody section .progressSidebar {
+    display: none
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li>a>span {
+    font-size: 15px
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li>a>i {
+    font-size: 19px;
+    width: 26px;
+    text-align: center;
+    margin-left: 10px
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li:hover {
+    min-height: 39px
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li:hover>a {
+    width: 280px;
+    position: absolute;
+    background-color: #ededed;
+    border-radius: 5px
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li:hover>a+ul {
+    display: block;
+    border-radius: 5px;
+    display: block;
+    width: 295px;
+    background-color: #ededed;
+    padding-top: 48px;
+    border-radius: 5px
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li:hover>a+ul li>a>span {
+    display: inline-block
+}
+
+.CollapseSidebar .Sidebar .SidebarBody section ul>li:hover>a>span {
+    display: inline-block
+}
+
+.showSidebar .Sidebar {
+    top: 48px;
+}
+
+.showSidebar .Sidebar .SidebarBody {
+    height: calc(100vh - 110px)
+}
+/* ==================== End sidebar ================ */
+/* ==================== breadcrumb ================ */
+.breadcrumb-theme {
+    padding: 10px 15px;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 0;
+    box-shadow: 0 0 8px #d7d7d7;
+}
+    .breadcrumb-theme h5 .badge {
+        margin-inline-start: 10px;
+        border: none;
+        box-shadow: none;
+    }
+    /* ==================== End  breadcrumb ================ */
+      /* ==================== TopHeader ================ */
+.TopHeader {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: justify;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    padding: 23px 10px;
+    box-shadow: 0 4px 2px -2px #ededed;
+    width: calc(100% - 280px);
+    position: fixed;
+    z-index: 998;
+    right: 0;
+    top: 0;
+    background-color: #fff
+}
+
+
+
+.TopHeader .right-section,
+.TopHeader .left-section {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex
+}
+
+.TopHeader .right-section>ul,
+.TopHeader .left-section>ul {
+    padding: 0 5px;
+    margin: 0
+}
+
+.TopHeader .right-section>ul>li,
+.TopHeader .left-section>ul>li {
+    display: inline-block
+}
+.TopHeader .dropdown-toggle.User img{
+    width: 15px;
+}
+.img-Culture img{
+    width: 15px;
+}
+@media(min-width: 1450px) {
+    .TopHeader .right-section>ul>li.showInTablet, .TopHeader .left-section>ul>li.showInTablet {
+        display: none
+    }
+}
+
+.TopHeader .right-section>ul>li>a,
+.TopHeader .left-section>ul>li>a {
+    padding: 7px 12px;
+    text-transform: capitalize;
+    color: #000;
+    font-size: 13px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer
+}
+
+@media(max-width: 1200px) {
+    .TopHeader .right-section>ul>li>a,
+    .TopHeader .left-section>ul>li>a {
+        padding: 7px 4px
+    }
+}
+
+.TopHeader .right-section>ul>li>a>i,
+.TopHeader .left-section>ul>li>a>i {
+    padding: 0 3px;
+    font-size: 13px
+}
+
+.TopHeader .right-section>ul>li>a.count>i,
+.TopHeader .left-section>ul>li>a.count>i {
+    font-size: 15px
+}
+
+.TopHeader .right-section>ul>li>a.count span,
+.TopHeader .left-section>ul>li>a.count span {
+    background-color: #fc495c;
+    color: #fff;
+    border-radius: 50%;
+    display: inline-block;
+    height: 14px;
+    width: 15px;
+    min-width: 15px;
+    padding: 0;
+    line-height: 13px;
+    position: absolute;
+    top: 1px;
+    right: 8px
+}
+
+.TopHeader .right-section>ul>li>a.User,
+.TopHeader .left-section>ul>li>a.User {
+    padding-right: 0
+}
+
+
+.TopHeader .right-section>ul>li>a.User+.ImgUser,
+.TopHeader .left-section>ul>li>a.User+.ImgUser {
+    display: inline-block
+}
+
+.TopHeader .right-section>ul>li>a.User+.ImgUser img,
+.TopHeader .left-section>ul>li>a.User+.ImgUser img {
+    border-radius: 50%
+}
+
+.CollapseSidebar .TopHeader {
+    width: calc(100% - 70px);
+}
+
+@media(max-width: 991px) {
+    .CollapseSidebar .TopHeader {
+        margin-right: 0;
+        width: 100%
+    }
+}
+      /* ==================== End TopHeader ================ */
 @media (max-width: 768px) {
     .banner-job {
     padding: 20px 20px;
@@ -420,7 +820,18 @@ header.Header {
 .section-services:nth-child(even) .img-container::after {
     right: -13px;
 }
-.navbar-nav>li>a.btn-light {
-    margin: 5px 0px;
+
+.section-services .img-container img {
+    border-radius: 25px;
+}
+.navbar>.container .navbar-brand img {
+    height: 22px;
+    margin-top: 5px;
+}
+.navbar-nav>li>a {
+    font-size: 12px;
+}
+.navbar-nav>li>a.btn {
+    margin: 5px;
 }
 }

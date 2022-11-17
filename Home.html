@@ -1,0 +1,65 @@
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="./Assets/images/Logo.png" />
+        <link rel="stylesheet" type="text/css" href="./Assets/bootstrap/bootstrap.min.css" />
+        <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" type="text/css" href="./Assets/css/style.css" />
+        <link rel="stylesheet" type="text/css" href="./Assets/css/arabic.css" />
+        </head>
+        <body class="Dashboard">
+          <header class="TopHeader">
+            <div class="right-section">
+                <ul>
+                    <li><a onclick="CollapseSidebar()"><i class="fa fa-indent"></i></a></li>
+                </ul>
+            </div>
+            <div class="left-section">
+                <ul>
+                    <li class="dropdown">
+                        <div class="ImgUser status Round100 active top" onclick="ShowSideBarAccount()">
+                            <img src="./Assets/images/dashboard/user.png">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>
+          <sidebar class="Sidebar">
+            <div class="SidebarHeader">
+                <a href="/">
+                    <img src="./Assets/images/Logo.png" class="h-50px logo">
+                </a>
+            </div>
+            <div class="SidebarBody">
+                <section>
+                    <ul>
+                        <li>
+                            <a href="/Home.html"><img src="./Assets/images/dashboard/home.png" /><span>الرئيسية</span></a>
+                        </li>
+                        <li>
+                          <a href="/statistics.html"><img src="./Assets/images/dashboard/statistics.png" /><span>الاحصائيات</span></a>
+                      </li>
+                      <li>
+                        <a href="/addition.html"><img src="./Assets/images/dashboard/addition.png" /><span>إضافاتى</span></a>
+                    </li>
+                    <li>
+                      <a href="/locations.html"><img src="./Assets/images/dashboard/locations.png" /><span>مواقعى</span></a>
+                  </li>
+                  <li>
+                    <a href="/setting.html"><img src="./Assets/images/dashboard/setting.png" /><span>الاعدادات</span></a>
+                </li>
+                    </ul>
+                 
+                </section>
+            </div>
+        </sidebar>
+        <section class="padding-page">
+          </section>
+<script src="./Assets/bootstrap/jquery-1.12.4.min.js"></script>
+            <script src="./Assets/bootstrap/bootstrap.min.js"></script>
+            <script type="text/javascript" src="./Assets/js/site.js"></script>
+        </body>
+</html>
