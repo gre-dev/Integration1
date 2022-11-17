@@ -6,3 +6,6 @@ function CollapseSidebar() {
         $("body").toggleClass('showSidebar');
     }
 }
+function openLogin() {
+    $('#LoginModal').modal('show',100)
+}

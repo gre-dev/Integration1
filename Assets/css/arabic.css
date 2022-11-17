@@ -52,6 +52,14 @@ h1,h2,h3{
     .SidebarContainer .SidebarContent .SidebarBody .rowItemcart .RemoveItem {
         left: 10px;
     }
+    @media (min-width: 768px) {
+        .section-services .text-container{
+            padding-right: 90px;
+        }
+        .section-services .img-container {
+            padding-left: 100px;
+        }
+        }
     @media (min-width: 992px) {
         .TopHeader,
         body.Dashboard {
