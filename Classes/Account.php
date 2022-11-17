@@ -11,6 +11,7 @@ class Account {
     
     use InputHandleTrait;
 
+    
     /**
      * @var string $dbhost mysql db host name or ip to use when quering data.
      * @var string $dbname mysql db name to get data from.
@@ -35,10 +36,11 @@ class Account {
     
     /**
      * @var int $PLAN_FREE_ID free plan id (default plan to attach to the fresh account created).
+     * @var float USERTOKEN_EXPIRE_PERIOD number of hours before considering usertoken is expired (without a token update).
      **/
     
     private $PLAN_FREE_ID;
-    
+    private $USERTOKEN_EXPIRE_PERIOD;
     /**
      * @var PDO $db PDO database object, don't use it directly inside
      * class method (instead use db_connect and db_close_connection),
@@ -83,7 +85,7 @@ class Account {
      **/
 
     private function db_connect() {
-        try {            
+        try {
             $this->db = new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}", $this->dbuser, $this->dbpass);
             $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -772,9 +774,9 @@ class Account {
         }
         
         $this->db_close_connection();
-        define('HOUR', 60 * 60 * 12);
+        define('HOUR', 60 * 60);
         
-        $expire_time = $last_update + 6 * HOUR;
+        $expire_time = $last_update +(int) ($this->USERTOKEN_EXPIRE_PERIOD) * HOUR;
         if ($expire_time > time()) {
             return false;
         }
@@ -782,6 +784,7 @@ class Account {
         return true;
     }
 }
+
 
 ?>
     
