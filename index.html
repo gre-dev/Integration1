@@ -33,7 +33,7 @@
             </ul>
          
             <ul class="nav navbar-nav navbar-right">
-              <li><a class="btn btn-light" data-toggle="modal" data-target="#LoginModal" data-backdrop="static" data-keyboard="false">الدخول</a></li>
+              <li><a class="btn btn-light" onclick="openLogin()">الدخول</a></li>
               <li><a class="btn btn-theme" href="#">انشاء حساب </a></li>
             </ul>
           </div><!-- /.navbar-collapse -->
@@ -96,7 +96,7 @@
         </div>
 </section>
   <!-- Modal -->
-  <div class="modal fade" id="LoginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="LoginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -134,6 +134,6 @@
   </div>
 <script src="./Assets/bootstrap/jquery-1.12.4.min.js"></script>
             <script src="./Assets/bootstrap/bootstrap.min.js"></script>
-           
+            <script type="text/javascript" src="./Assets/js/site.js"></script>
         </body>
 </html>

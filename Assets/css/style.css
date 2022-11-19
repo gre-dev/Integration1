@@ -62,7 +62,7 @@ header.Header {
     background-color: transparent;
 }
 .navbar-nav>li>a.btn-theme {
-    background-color: var(--mainColor);
+    background-color: #8C6BEE;
     color: #fff ;
     font-weight: 300 ;
     padding: 8px 30px;
@@ -71,8 +71,8 @@ header.Header {
 }
 .navbar-nav>li>a.btn-light {
     background-color: transparent;
-    border-color: 1px solid var(--SecondColor);
-    color: var(--SecondColor);
+    border: 1px solid #333E48;
+    color: #333E48;
     font-weight: 300;
     padding: 8px 30px;
     border-radius: 25px;
@@ -85,6 +85,15 @@ header.Header {
     background-size: 100% 100%;
     position: relative;
     display: flex;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    align-items: center;
+    -ms-flex-pack: justify;
+    -webkit-box-pack: justify;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     align-items: center;
     padding: 20px 50px;
 }
@@ -110,7 +119,7 @@ header.Header {
 }
 .banner-job .banner-container .btn.btn-dark{
     color: #fff;
-    background-color: var(--mainColor);
+    background-color: #8C6BEE;
     text-align: start;
     padding: 10px 20px;
     position: relative;
@@ -129,7 +138,7 @@ header.Header {
 }
 .banner-job .banner-container h1 {
     font-size: 40px;
-    margin: 70px 0 30px;
+    margin: 150px 0 30px;
     line-height: 57px;
 }
 .banner-job .banner-container h4{
@@ -146,7 +155,16 @@ header.Header {
 }
 .section-services {
     display: flex;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     align-items: center;
+    -ms-flex-pack: justify;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     margin-bottom: 40px;
 }
 .section-services .img-container,
@@ -155,6 +173,12 @@ header.Header {
 }
 .section-services:nth-child(even) {
     flex-direction: row-reverse;
+    -ms-flex-direction:  row-reverse;
+-moz-flex-direction:  row-reverse;
+-webkit-flex-direction:  row-reverse;
+-o-flex-direction:  row-reverse;
+-ms-flex-pack: justify;
+-webkit-box-pack: justify;
 }
 @media (min-width: 768px) {
 .section-services .text-container{
@@ -183,6 +207,9 @@ header.Header {
     z-index: 0;
     bottom: -24px;
     animation: rotation 8s infinite linear;
+    -moz-animation: rotation 8s infinite linear;
+    -ms-animation: rotation 8s infinite linear;
+     -o-animation: rotation 8s infinite linear;
    
 }
 .section-services:nth-child(odd) .img-container::before {
@@ -202,6 +229,9 @@ header.Header {
     z-index: 0;
     top: 32px;
     animation: rotation 8s infinite linear;
+    -moz-animation: rotation 8s infinite linear;
+    -ms-animation: rotation 8s infinite linear;
+     -o-animation: rotation 8s infinite linear;
    
 }
 .section-services:nth-child(odd) .img-container::after {
@@ -230,6 +260,30 @@ header.Header {
     }
     to {
       transform: rotate(359deg);
+    }
+  }
+  @-ms-keyframes rotation {
+    from {
+      -ms-transform:  rotate(0deg);
+    }
+    to {
+      -ms-transform:  rotate(359deg);
+    }
+  }
+  @-moz-keyframes rotation {
+    from {
+      -moz-transform:  rotate(0deg);
+    }
+    to {
+      -moz-transform:  rotate(359deg);
+    }
+  }
+  @-webkit-keyframes rotation {
+    from {
+      -webkit-transform:  rotate(0deg);
+    }
+    to {
+      -webkit-transform:  rotate(359deg);
     }
   }
 .section-services .img-container img {
@@ -312,7 +366,7 @@ header.Header {
    }
    .login-modal-body .title-login {
  text-align: center;
- color: var(--SecondColor);
+ color: #333E48;
  margin: 20px 0;
  font-size: 24px;
  font-family: 'Almarai-Bold';
@@ -376,10 +430,10 @@ header.Header {
     font-family: 'Almarai-Bold';
     padding: 3px 10px;
     padding-inline-start: 30px;
-    color: var(--SecondColor);
+    color: #333E48;
 }
 .login-modal-body form .btn-theme{
-    background-color: var(--mainColor);
+    background-color: #8C6BEE;
     color: #fff;
     font-weight: 300;
     padding: 8px 30px;
@@ -398,7 +452,7 @@ header.Header {
     margin: 25px 0;
 }
 .login-modal-body p a {
-    color: var(--mainColor);
+    color: #8C6BEE;
     text-decoration: none;
     margin: 0 5px;
     cursor: pointer;
@@ -638,9 +692,11 @@ header.Header {
     /* ==================== End  breadcrumb ================ */
       /* ==================== TopHeader ================ */
 .TopHeader {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     -ms-flex-pack: justify;
     -webkit-box-pack: justify;
     justify-content: space-between;
@@ -763,8 +819,12 @@ header.Header {
 }
       /* ==================== End TopHeader ================ */
 @media (max-width: 768px) {
+    .navbar>.container .navbar-brand {
+        padding: 10px 0;
+    }
     .banner-job {
     padding: 20px 20px;
+    background-size: cover;
 }
     .banner-job .banner-container .btn {
         margin-top: 10px;
@@ -772,7 +832,7 @@ header.Header {
                 font-size: 13px;
     }
     .navbar-toggle  {
-        background-color: var(--mainColor);
+        background-color: #8C6BEE;
     }
     .navbar-toggle .icon-bar {
         background-color: #fff;
