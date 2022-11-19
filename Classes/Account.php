@@ -776,7 +776,7 @@ class Account {
         $this->db_close_connection();
         define('HOUR', 60 * 60);
         
-        $expire_time = $last_update +(int) ($this->USERTOKEN_EXPIRE_PERIOD) * HOUR;
+        $expire_time = $last_update +(int) ($this->USERTOKEN_EXPIRE_PERIOD * HOUR);
         if ($expire_time > time()) {
             return false;
         }
