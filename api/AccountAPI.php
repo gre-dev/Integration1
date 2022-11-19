@@ -141,12 +141,12 @@ class AccountAPI extends BaseAPI {
         if ($this->check_if_logged_in())
         {
             $account = new Account();
-            
             $account->logout();
             
             $success = $this->arr_success_response();
             $response = json_encode ($success, true);               
         }
+        
         else {
             $code = NOT_LOGGED_IN;
             $msg = "you're not logged in";
@@ -208,12 +208,21 @@ class AccountAPI extends BaseAPI {
                     }
                 }
             }
+            if ($this->is_url_action_provided('logout'))
+            {
+                $input = file_get_contents('php://input');
+                
+                if ($input) {
+                    
+                    $this->logout();
+                    }
+                }
+            }
+            else {
+                throw new InvalidHttpMethodException();
+            }
         }
-        else {
-            throw new InvalidHttpMethodException();
-        }
-    }
-
+        
     public function arr_error_response(int $error_code , string $message) {
 
         $array = array (

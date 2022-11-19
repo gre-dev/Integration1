@@ -52,6 +52,7 @@
 |------|--------------------------------------------------------|
 | 15   | login credentials are not correct                      |
 | 16   | firstname (or lastname) is not provided in api request |
+| 17   | current operation required to be logged in             |
 
 
 
