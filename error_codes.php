@@ -7,4 +7,6 @@ const ARG_USERNAME_EMPTY = 5;
 const ARG_LOG_TYPE_EMPTY = 6;
 const ARG_LOG_VALUE_EMPTY = 7;
 
+const LOGIN_FAILED = 15;
+
 ?>

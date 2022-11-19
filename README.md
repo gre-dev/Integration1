@@ -46,4 +46,14 @@
 | 13   | unknown error in the database process (you should set the message, otherwise no way |
 
      
+### API error codes:
+
+| Code | Description                                |
+|------|--------------------------------------------|
+| 15   | login credentials are not correct          |
+
+
+
+
+
 
