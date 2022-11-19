@@ -8,5 +8,5 @@ const ARG_LOG_TYPE_EMPTY = 6;
 const ARG_LOG_VALUE_EMPTY = 7;
 
 const LOGIN_FAILED = 15;
-
+const FIRST_OR_LAST_NAME_MISSING = 16;
 ?>

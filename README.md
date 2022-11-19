@@ -48,9 +48,11 @@
      
 ### API error codes:
 
-| Code | Description                                |
-|------|--------------------------------------------|
-| 15   | login credentials are not correct          |
+| Code | Description                                            |
+|------|--------------------------------------------------------|
+| 15   | login credentials are not correct                      |
+| 16   | firstname (or lastname) is not provided in api request |
+
 
 
 

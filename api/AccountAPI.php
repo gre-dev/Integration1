@@ -69,13 +69,22 @@ class AccountAPI extends BaseAPI {
         try {
             $account = new Account();
 
-            $username = "$firstname $lastname";
-            $account->create_new_account($email,$password,$username);
-
-            $success = $this->arr_success_response();
-            $response = json_encode ($success, true);
-            
+            if (empty($firstname) || empty($lastname)) {
+                $code = FIRST_OR_LAST_NAME_MISSING;
+                $msg = 'either firstname or lastname field is empty or missing';
+                
+                $err_array = $this->arr_error_response($code,$msg);
+                $response = json_encode ($err_array);
             }
+            
+            else {
+                $username = "$firstname $lastname";
+                $account->create_new_account($email,$password,$username);
+                
+                $success = $this->arr_success_response();
+                $response = json_encode ($success, true);
+            }
+        }
             
         catch (InvalidArgumentException $e)
         {
@@ -86,7 +95,7 @@ class AccountAPI extends BaseAPI {
                 $msg = 'password is missing';
                 $msg = $e->getMessage();
                 break;
-            case ARG_USERNAME_EMPTY:
+            case ARG_USERNAME_EMPTY: // this will not happend but included anyway
                 $msg = 'username is missing';
                 break;
                 
@@ -105,7 +114,7 @@ class AccountAPI extends BaseAPI {
         }
         catch (DBException $e) {
             $code = $e->getCode();
-            
+
             if ($code === DBException::DB_ERR_INSERT || $code ===  DBException::DB_ERR_SELECT || $code === DBException::DB_ERR_CONN_WRONG_DATA)
             {
                 $msg = 'error while registering a new account';
@@ -118,18 +127,17 @@ class AccountAPI extends BaseAPI {
         
         $this->out($response);
     }
-
-private function check_if_logged_in() {
-
-    return isset($_SESSION) &&
-        isset($_SESSION['login_email']) &&
-        isset($_SESSION['login_password']) &&
-        isset($_SESSION['login_token']);
     
-}
-
+    private function check_if_logged_in() {
+        
+        return isset($_SESSION) &&
+            isset($_SESSION['login_email']) &&
+            isset($_SESSION['login_password']) &&
+            isset($_SESSION['login_token']);
+    }
+    
     public function logout () {
-
+        
         if ($this->check_if_logged_in())
         {
             $account = new Account();
@@ -194,8 +202,9 @@ private function check_if_logged_in() {
 
                         $email = $this->param_post_json('email');
                         $password = $this->param_post_json('password');
-                        $username = $this->param_post_json('username');
-                        $this->login($email, $password);
+                        $firstname = $this->param_post_json('firstname');
+                        $lastname = $this->param_post_json('lastname');
+                        $this->register($email, $password, $firstname, $lastname);
                     }
                 }
             }
