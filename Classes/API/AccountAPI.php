@@ -26,7 +26,7 @@ class AccountAPI extends BaseAPI {
                 $response = json_encode ($success, true);
             }
         }
-            
+
         catch (InvalidArgumentException $e)
         {
             $code = $e->getCode();
@@ -158,71 +158,6 @@ class AccountAPI extends BaseAPI {
         $this->out($response);
     }
 
-    public function route ()
-    {
-
-        if ($this->is_method_post())
-        {
-
-            if ($this->is_url_action_provided('login'))
-            {
-
-                $input = file_get_contents('php://input');
-
-                if ($input) {
-
-                    $json_array = json_decode($input, true) ?? null;
-                    
-                    if ($json_array !== false) {
-
-                        $this->input = $input;
-                        $this->json_array = $json_array;
-
-                        $email = $this->param_post_json('email');
-
-                        $password = $this->param_post_json('password');
-
-                        $this->login($email, $password);
-                    }
-                }
-            }
-
-            if ($this->is_url_action_provided('register'))
-            {
-                $input = file_get_contents('php://input');
-
-                if ($input) {
-
-                    $json_array = json_decode($input, true) ?? null;
-                    
-                    if ($json_array !== false) {
-
-                        $this->input = $input;
-                        $this->json_array = $json_array;
-
-                        $email = $this->param_post_json('email');
-                        $password = $this->param_post_json('password');
-                        $firstname = $this->param_post_json('firstname');
-                        $lastname = $this->param_post_json('lastname');
-                        $this->register($email, $password, $firstname, $lastname);
-                    }
-                }
-            }
-            if ($this->is_url_action_provided('logout'))
-            {
-                $input = file_get_contents('php://input');
-                
-                if ($input) {
-                    
-                    $this->logout();
-                    }
-                }
-            }
-            else {
-                throw new InvalidHttpMethodException();
-            }
-        }
-        
     public function arr_error_response(int $error_code , string $message) {
 
         $array = array (
@@ -242,7 +177,6 @@ class AccountAPI extends BaseAPI {
 
         return $array;
     }
-
                
 }
 
