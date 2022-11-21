@@ -24,10 +24,34 @@ if (is_method_post())
                         
             $firstname = param_post_json($json_array,'firstname');
             $lastname = param_post_json($json_array,'lastname');
-                        
-            $api = new AccountAPI();
-            $api->register($email, $password, $firstname, $lastname);
+
+
+            if ($email && $password && $firstname && $lastname)
+            {
+                $api = new AccountAPI();
+                $api->register($email, $password, $firstname, $lastname);
+
+            }
+            else {
+                http_response_code(400);
+                
+                if ($email === null) {
+                    die('missing email');
+                }
             
+                if ($password === null) {
+                    die('missing password');
+                }
+            
+
+                if ($firstname === null) {
+                    die('missing firstname');
+                }
+            
+                if ($lastname  === null) {
+                    die('missing lastname');
+                }
+            }
         }
     }
     else {
