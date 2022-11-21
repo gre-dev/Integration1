@@ -6,7 +6,7 @@ class EmptyBodyRequestException extends Exception
         parent::__construct();
         
         $this->code = 18;
-        $this->message = 'you send an api request with a missing empty';
+        $this->message = 'you send an api request with a missing body';
     }
 }
 
