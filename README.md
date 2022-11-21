@@ -48,12 +48,15 @@
      
 ### API error codes:
 
-| Code | Description                                            |
-|------|--------------------------------------------------------|
-| 15   | login credentials are not correct                      |
-| 16   | firstname (or lastname) is not provided in api request |
-| 17   | current operation required to be logged in             |
-
+| Code | Description                                                    |
+|------|----------------------------------------------------------------|
+| 15   | login credentials are not correct                              |
+| 16   | firstname (or lastname) is not provided in api request         |
+| 17   | current operation required to be logged in                     |
+| 18   | you haven't sent data body for an api request that requires it |
+| 19   | invalid http method for this api url                           |
+|      |                                                                |
+	
 
 
 
