@@ -7,7 +7,14 @@ require_once PROJECT_ROOTDIR . '/Classes/Exceptions/InvalidHttpMethodException.p
     
 class AccountAPI extends BaseAPI {
 
-    public function login ($email,$password) {
+    /**
+     * login api method, performs the account login
+     *
+     * @param string $email the account email
+     * @param string $password the account password
+     **/
+    
+    public function login (string $email, string $password) {
 
         try {
             $account = new Account();
@@ -63,6 +70,15 @@ class AccountAPI extends BaseAPI {
         
         $this->out($response);
     }
+
+    /**
+     * register account api method, it also wraps the Account's register method with a firstname and lastname of username.
+     *
+     * @param string $email the account email
+     * @param string $password the account password
+     * @param string $firstname the firstname
+     * @param string $lastname the lastname
+     **/
 
     public function register ($email,$password, $firstname, $lastname) {
             
@@ -127,6 +143,13 @@ class AccountAPI extends BaseAPI {
         
         $this->out($response);
     }
+
+    /**
+     * checks if the client is logged in
+     *
+     * @return true if the client logged in
+     * @return false if the client is not logged in
+     **/
     
     private function check_if_logged_in() {
         
@@ -135,7 +158,11 @@ class AccountAPI extends BaseAPI {
             isset($_SESSION['login_password']) &&
             isset($_SESSION['login_token']);
     }
-    
+
+    /**
+     * makes the logged in account signs out.
+     *
+     **/
     public function logout () {
         
         if ($this->check_if_logged_in())
@@ -157,6 +184,15 @@ class AccountAPI extends BaseAPI {
         
         $this->out($response);
     }
+    
+    /**
+     * returns an array suitable for an error json response.
+     * 
+     * @param int $error_code the error code
+     * @param string $message the error message
+     *
+     * @return the error response array, to be used with the json_encode function
+     **/
 
     public function arr_error_response(int $error_code , string $message) {
 
@@ -168,6 +204,12 @@ class AccountAPI extends BaseAPI {
         return $array;
     }
 
+    /**
+     * returns an array suitable for a successful json response.
+     * 
+     * @return the successful response, to be used with the json_encode function
+     **/
+    
     public function arr_success_response() {
 
         $array = array (
