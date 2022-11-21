@@ -30,10 +30,15 @@ if (is_method_post())
             
         }
     }
-    
+
+    else {
     throw new EmptyBodyRequestException();
+    }
 }
 
+
+else {
 throw new InvalidHttpMethodException();
+}
 
 ?>

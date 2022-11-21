@@ -16,10 +16,13 @@ if (is_method_post())
         $api->logout();
         
     }
-    
+    else {    
     throw new EmptyBodyRequestException();
+    }
 }
 
+else {
 throw new InvalidHttpMethodException();
+}
 
 ?>

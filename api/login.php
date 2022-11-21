@@ -27,10 +27,14 @@ if (is_method_post())
             $api->login($email,$password);
         }
     }
-    throw new EmptyBodyRequestException();
-    
+    else {
+        throw new EmptyBodyRequestException();
+    }
 }
 
+else {
 throw new InvalidHttpMethodException();
+}
+
 
 ?>
