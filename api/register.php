@@ -30,15 +30,15 @@ if (is_method_post())
             
         }
     }
-
     else {
-    throw new EmptyBodyRequestException();
+                 http_response_code(400);
+                 die('missed request body');
     }
 }
 
-
 else {
-throw new InvalidHttpMethodException();
+    http_response_code(405);
+    die();
 }
 
 ?>
