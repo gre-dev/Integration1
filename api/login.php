@@ -23,15 +23,31 @@ if (is_method_post())
 
             $password = param_post_json($json_array,'password');
 
-            $api = new AccountAPI();
-            $api->login($email,$password);
+            if ($email && $password)
+            {
+                $api = new AccountAPI();
+                $api->login($email,$password);
+            }
+            
+            else {
+                http_response_code(400);
+                
+                if ($email === null) {
+                    die('missing email');
+                }
+            
+                if ($password === null) {
+                    die('missing password');
+                }
+            }
+        }
+    }   
+
+        else {
+            http_response_code(400);
+            die('missed request body');
         }
     }
-    else {
-                 http_response_code(400);
-                 die('missed request body');
-    }
-}
 
 else {
     http_response_code(405);
