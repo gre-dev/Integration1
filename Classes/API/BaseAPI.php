@@ -21,6 +21,7 @@ class BaseAPI {
     public function out($data, $headers = null)
     {
         header_remove('Set-Cookie');
+        header('Content-Type:application/json');
         
         if (is_array($headers) && count($headers)) {
             foreach ($headers as $header) {
