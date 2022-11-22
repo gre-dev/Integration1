@@ -23,8 +23,9 @@ if (is_method_post())
 
             $password = param_post_json($json_array,'password');
 
-            if ($email && $password)
+            if ($email !== null && $password !== null)
             {
+
                 $api = new AccountAPI();
                 $api->login($email,$password);
             }

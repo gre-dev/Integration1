@@ -21,15 +21,12 @@ if (is_method_post())
                                     
             $email = param_post_json($json_array,'email');
             $password = param_post_json($json_array,'password');
-                        
-            $firstname = param_post_json($json_array,'firstname');
-            $lastname = param_post_json($json_array,'lastname');
+            $username = param_post_json($json_array,'username');
 
-
-            if ($email && $password && $firstname && $lastname)
+            if ($email !== null && $password !== null && $username !== null)
             {
                 $api = new AccountAPI();
-                $api->register($email, $password, $firstname, $lastname);
+                $api->register($email, $password, $username);
 
             }
             else {
@@ -44,13 +41,10 @@ if (is_method_post())
                 }
             
 
-                if ($firstname === null) {
-                    die('missing firstname');
+                if ($username === null) {
+                    die('missing username');
                 }
             
-                if ($lastname  === null) {
-                    die('missing lastname');
-                }
             }
         }
     }

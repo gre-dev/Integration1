@@ -76,30 +76,19 @@ class AccountAPI extends BaseAPI {
      *
      * @param string $email the account email
      * @param string $password the account password
-     * @param string $firstname the firstname
-     * @param string $lastname the lastname
+     * @param string $username the username
      **/
 
-    public function register ($email,$password, $firstname, $lastname) {
+    public function register ($email,$password,$username) {
             
         try {
             $account = new Account();
 
-            if (empty($firstname) || empty($lastname)) {
-                $code = FIRST_OR_LAST_NAME_MISSING;
-                $msg = 'either firstname or lastname field is empty or missing';
-                
-                $err_array = $this->arr_error_response($code,$msg);
-                $response = json_encode ($err_array);
-            }
+            $account->create_new_account($email,$password,$username);
             
-            else {
-                $username = "$firstname $lastname";
-                $account->create_new_account($email,$password,$username);
-                
-                $success = $this->arr_success_response();
-                $response = json_encode ($success, true);
-            }
+            $success = $this->arr_success_response();
+            $response = json_encode ($success, true);
+            
         }
             
         catch (InvalidArgumentException $e)
@@ -111,7 +100,7 @@ class AccountAPI extends BaseAPI {
                 $msg = 'password is missing';
                 $msg = $e->getMessage();
                 break;
-            case ARG_USERNAME_EMPTY: // this will not happend but included anyway
+            case ARG_USERNAME_EMPTY:
                 $msg = 'username is missing';
                 break;
                 
