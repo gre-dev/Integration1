@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../error_codes.php';
+require_once __DIR__ . '/RedisFunctions.php';
 
 class API {
     
@@ -108,20 +109,19 @@ class API {
         try {
             
             $db = $this->db_connect();
-            $planStmt = $db->prepare("SELECT COUNT(id) from {$this->plans_table} where id = ?");
+            $redisQuery = new RedisFunctions();
+            $result=$redisQuery->query($db,"SELECT COUNT(id) from {$this->plans_table} where id = ?",[$planid]);
 
-            $result = $planStmt->execute(array($planid));
             
-            if (!$result || $planStmt->fetchColumn() === 0)
+            if (!$result)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 throw $exception;             
             }
+
+            $result=$redisQuery->query($db,"SELECT COUNT(id) from {$this->accounts_table} where id = ?",[$accountid]);
             
-            $accountStmt = $db->prepare("SELECT COUNT(id) from {$this->accounts_table} where id = ?");
-            $result = $accountStmt->execute(array($accountid));
-            
-            if (!$result || $accountStmt->fetchColumn() === 0)
+            if (!$result)
             {
                 $exception = new DBException(DBException::DB_ERR_SELECT);
                 throw $exception;             
@@ -135,16 +135,7 @@ class API {
         }
 
         try {
-            $stmt = $db->prepare("INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date) VALUES (:accountid, :apikey, :requests, :planid, :date)");
-            $data = [
-                'accountid' => $accountid,
-                'apikey' => $this->generate_apikey_string(), 
-                'requests' => 0, // represent api key current requests, not the plan limit
-                'planid' => $planid,
-                'date' => time(),
-               
-            ];
-            $result = $stmt->execute($data);
+            $result=$redisQuery->query($db,"INSERT INTO {$this->api_keys_table} (account_id, api_key, requests, plan_id, date) VALUES (:accountid, :apikey, :requests, :planid, :date)",[$accountid,$this->generate_apikey_string(),0,$planid,time()]);
 
             if (!$result) {
                 $exception = new DBException(DBException::DB_ERR_INSERT);
@@ -186,13 +177,9 @@ class API {
             
             try {
                 $db = $this->db_connect();
-                $stmt = $db->prepare("SELECT COUNT(api_key) FROM {$this->api_keys_table} WHERE api_key = :key");
-                
-                $data = array (
-                    'key' => $string,
-                );
-                $result = $stmt->execute($data);
-                
+                $redisQuery = new RedisFunctions();
+                $result=$redisQuery->query($db,"SELECT COUNT(api_key) FROM {$this->api_keys_table} WHERE api_key = ?",[$string]);
+
                 if ($result === false) {
                     $exception = new DBException(DBException::DB_ERR_SELECT);
                     $exception->set_select_data("Error while ensuring api key uniqueness");
