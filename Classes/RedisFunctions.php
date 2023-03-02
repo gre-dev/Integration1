@@ -53,4 +53,31 @@ class RedisFunctions
             throw $exception;
         }
     }
+
+    public function query($query, $params = [])
+    {
+
+        // Check if the query is already cached
+        $redis_key = md5($query);
+        $data = $this->redis->get($redis_key);
+        if ($data) {
+            return json_decode($data);
+        }
+
+        // Query the database
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        //store the result in redis
+        $this->redis->set($redis_key, json_encode($result));
+
+        return $result;
+
+    }
 }
