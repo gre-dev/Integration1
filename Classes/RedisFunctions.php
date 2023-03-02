@@ -58,9 +58,10 @@ class RedisFunctions
     {
 
         // Check if the query is already cached
-        $redis_key = md5($query);
+        $redis_key = md5($query.serialize($params));
         $data = $this->redis->get($redis_key);
-        if ($data) {
+
+        if ($data !== false) {
             return json_decode($data);
         }
 
