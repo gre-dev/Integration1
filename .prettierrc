@@ -1,0 +1,37 @@
+{
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "printWidth": 100000,
+    "trailingComma": "none",
+    "bracketSameLine": true,
+    "overrides": [
+        {
+            "files": "*.php",
+            "options": {
+                "phpVersion": "8.0",
+                "parser": "php",
+                "bracketSpacing": true,
+                "arrowParens": "always",
+                "pluginSearchDirs": [".github/format"],
+                "plugins": [".github/format/plugin-php"],
+                "trailingCommaPHP": true,
+                "braceStyle": "per-cs"
+            }
+        },
+        {
+            "files": "*.scss",
+            "options": {
+                "parser": "scss",
+                "htmlWhitespaceSensitivity": "ignore"
+            }
+        },
+        {
+            "files": "*.yml",
+            "options": {
+                "parser": "yaml",
+                "tabWidth": 2
+            }
+        }
+    ]
+}

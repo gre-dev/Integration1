@@ -1,11 +1,7 @@
 function CollapseSidebar() {
     if ($(window).width() > 991) {
-        $("body").toggleClass('CollapseSidebar');
+        $('body').toggleClass('CollapseSidebar')
+    } else {
+        $('body').toggleClass('showSidebar')
     }
-    else {
-        $("body").toggleClass('showSidebar');
-    }
-}
-function openLogin() {
-    $('#LoginModal').modal('show',100)
 }
