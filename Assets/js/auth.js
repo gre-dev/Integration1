@@ -43,6 +43,8 @@ $(document).ready(function () {
         if (!valid) return
 
         // form is valid
+        $('.auth-email').text(email)
+
         $.ajax({
             url: API_URL + 'login.php',
             method: 'POST',
@@ -67,7 +69,11 @@ $(document).ready(function () {
                 }
 
                 $('#login-success-alert').css('display', 'block')
-                setTimeout(() => $('.form-modal').modal('hide'), 1500)
+                setTimeout(() => {
+                    $('.form-modal').modal('hide')
+                    $('.auth-btn').css('display', 'none')
+                    $('.auth-user').css('display', 'inline-block')
+                }, 500)
             })
             .error(function (data) {
                 $('#login-error-alert').css('display', 'block')
@@ -103,6 +109,8 @@ $(document).ready(function () {
         if (!valid) return
 
         // form is valid
+        $('.auth-email').text(email)
+
         $.ajax({
             url: API_URL + 'register.php',
             method: 'POST',
@@ -128,7 +136,11 @@ $(document).ready(function () {
                 }
 
                 $('#signup-success-alert').css('display', 'block')
-                setTimeout(() => $('.form-modal').modal('toggle'), 1500)
+                setTimeout(() => {
+                    $('.form-modal').modal('hide')
+                    $('.auth-btn').css('display', 'none')
+                    $('.auth-user').css('display', 'inline-block')
+                }, 500)
             })
             .error(function (data) {
                 $('#signup-error-alert').css('display', 'block')
