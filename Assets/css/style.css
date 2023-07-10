@@ -895,3 +895,19 @@ header.Header {
     margin: 5px;
 }
 }
+
+.theme-btn {
+    color: #fff;
+    font-weight: 300;
+    padding: 8px 30px;
+    border-radius: 25px;
+    transition: all 0.5s ease-in-out;
+}
+
+.theme-btn-bg {
+    background-color: #8C6BEE;
+}
+
+.theme-btn-bg:hover {
+    background-color: #6b51b9;
+}
