@@ -77,6 +77,67 @@ $(document).ready(function () {
             })
     })
 
+    // handle signup form submission
+    $(document).on('submit', '#signup-form', function (ev) {
+        ev.preventDefault()
+
+        // validate the form
+        let valid = true
+        const userName = $(this).find('.user-name').val()
+        const email = $(this).find('.user-email').val()
+        const password = $(this).find('.user-password').val()
+
+        if (!email || !email.length || !isValidEmail(email)) {
+            $(this).find('.email-error').css('display', 'block')
+            $(this).find('.email-group').addClass('has-error')
+
+            valid = false
+        }
+
+        if (!password || !password.length) {
+            $(this).find('.password-group').addClass('has-error')
+            valid = false
+        }
+
+        // stop submit event if form is not valid
+        if (!valid) return
+
+        // form is valid
+        $.ajax({
+            url: API_URL + 'register.php',
+            method: 'POST',
+            contentType: 'application/json',
+            accepts: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                email,
+                password,
+                username: userName
+            })
+        })
+            .success(function (data) {
+                if (!data) {
+                    $('#signup-error-alert').css('display', 'block')
+                    return
+                }
+
+                if (data.success === false && data.info.length) {
+                    $('#signup-error-alert').css('display', 'block')
+                    $('#signup-error-alert #content').text(data.info)
+                    return
+                }
+
+                $('#signup-success-alert').css('display', 'block')
+                setTimeout(() => $('.form-modal').modal('toggle'), 1500)
+            })
+            .error(function (data) {
+                $('#signup-error-alert').css('display', 'block')
+            })
+            .done(function () {
+                resetForm('signup-form')
+            })
+    })
+
     /**
      * check if email is valid
      *
